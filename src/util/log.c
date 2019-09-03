@@ -26,7 +26,7 @@ void init_logger(struct stLogger* logger, LogLevel log_level)
     logger->logfile_error = logger->logfile_warning;
 }
 
-get_time_str(char* buffer)
+void get_time_str(char* buffer)
 {
     time_t rawtime;
     struct tm * timeinfo;

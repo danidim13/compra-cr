@@ -38,4 +38,4 @@ void log_info(struct stLogger* logger, char* msg);
 void log_warning(struct stLogger* logger, char* msg);
 void log_error(struct stLogger* logger, char* msg);
 
-#endif APP_ECOMMERCE_LOG_H
+#endif //APP_ECOMMERCE_LOG_H
