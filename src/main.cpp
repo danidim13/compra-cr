@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio.h>
 #include "util/log.h"
 
 int main() {

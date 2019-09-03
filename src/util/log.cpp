@@ -3,8 +3,8 @@
 //
 
 #include "log.h"
-#include "stdlib.h"
-#include "time.h"
+#include <cstdlib.h>
+#include <ctime.h>
 
 struct stLogger * default_logger = NULL;
 
