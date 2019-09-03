@@ -132,3 +132,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+## Project specific
+logs/*
+.idea/*
+app_ecommerce
+app_ecommerce.cbp
