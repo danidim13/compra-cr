@@ -5,7 +5,7 @@
 #ifndef APP_ECOMMERCE_LOG_H
 #define APP_ECOMMERCE_LOG_H
 
-#include "stdio.h"
+#include <stdio.h>
 
 
 /**
@@ -20,6 +20,7 @@ typedef enum {
 
 #define DEFAULT_LOG_LEVEL INFO
 #define TIME_STR_LEN 25
+#define LOG_FOLDER "logs/"
 
 struct stLogger {
     FILE * logfile_debug;
