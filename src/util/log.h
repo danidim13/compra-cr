@@ -18,7 +18,7 @@ typedef enum {
     ERROR,
 } LogLevel;
 
-#define DEFAULT_LOG_LEVEL INFO
+#define DEFAULT_LOG_LEVEL DEBUG
 #define TIME_STR_LEN 25
 #define LOG_FOLDER "logs/"
 

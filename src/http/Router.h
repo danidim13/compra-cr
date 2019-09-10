@@ -11,9 +11,17 @@ namespace http {
     class Router {
     public:
         Router();
-
         void parse_request();
+
     private:
+
+        /**
+         * Parses query string arguments, stores mapped values on m_queryMap
+         * @return Number of key-value pairs parsed;
+         */
+        unsigned long parse_query_string();
+
+        std::unordered_map<std::string, std::string> m_queryMap;
 
     };
 }
