@@ -3,6 +3,8 @@
 //
 
 #include "view/DomItem.h"
+#include "view/NavItem.h"
+#include "view/PageBuilder.h"
 #include <iostream>
 
 void test_dom() {
@@ -20,14 +22,26 @@ void test_dom() {
                   },
                   DomItem::OPEN, nullptr);
 
+    NavItem item3("local",
+            "Inicio",
+            {
+                {"class", "nav-item nav-link"},
+            });
 
-    std::cout << item1 << std::endl << item2 << std::endl;
 
+    std::cout << item1 << std::endl << item2 << std::endl << item3 << std::endl;
+
+}
+
+void test_builder() {
+    PageBuilder pageBuilder;
+    std::cout << pageBuilder.build_document() << std::endl;
 }
 
 int main(int argc, char *argv[]) {
 
-    test_dom();
+    // test_dom();
+    test_builder();
 
 }
 
