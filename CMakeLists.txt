@@ -4,7 +4,7 @@ project(app_ecommerce CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(src)
-# add_subdirectory(Google_tests)
+add_subdirectory(Google_tests)
 
 
 
