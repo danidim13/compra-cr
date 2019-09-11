@@ -3,4 +3,6 @@ set(core_SRCS util/log.cpp util/log.h http/http.cpp http/http.h http/Router.cpp 
 
 add_library(core ${core_SRCS})
 add_executable(app_ecommerce.cgi main.cpp)
+add_executable(manual_test test.cpp)
 target_link_libraries(app_ecommerce.cgi -static-libstdc++ -static-libgcc core)
+target_link_libraries(manual_test core)

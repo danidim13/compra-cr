@@ -5,12 +5,10 @@
 #include <sstream>
 #include "DomItem.h"
 
-DomItem::DomItem(const std::string &mTag, const std::unordered_map<std::string, std::string> &mAttributes,
-                 const std::list<DomItem> &mChildren, DomItem::DomContentType mContentType,
-                 DomItem *mParent = nullptr) :
+DomItem::DomItem(const std::string &mTag, const m_attributes_type &mAttributes,
+                 DomItem::DomContentType mContentType, DomItem *mParent) :
         m_tag(mTag),
         m_attributes(mAttributes),
-        m_children(mChildren),
         m_parent(mParent), m_contentType(mContentType) {
 
 }
@@ -18,7 +16,7 @@ DomItem::DomItem(const std::string &mTag, const std::unordered_map<std::string, 
 // ContentType = NONE <{tag} {attr1}="{value1}" {attr2}="{value2}"/>
 // ContentType = SIMPLE <{tag} {attr1}="{value1}" {attr2}="{value2}">{std::string content}</tag>
 // ContentType = COMPLEX <{tag} {attr1}="{value1}" {attr2}="{value2}"/>{std::list children}</tag>
-std::string DomItem::to_string() {
+std::string DomItem::to_string() const {
 
     std::ostringstream builder;
     builder << "<" << m_tag;
@@ -28,6 +26,10 @@ std::string DomItem::to_string() {
     switch (m_contentType) {
         case NONE: {
             builder << "/>";
+            break;
+        }
+        case OPEN: {
+            builder << ">";
             break;
         }
         case SIMPLE: {
@@ -40,5 +42,10 @@ std::string DomItem::to_string() {
         }
     }
     return builder.str();
+}
+
+std::ostream &operator<<(std::ostream &os, const DomItem &item) {
+    os << item.to_string();
+    return os;
 }
 
