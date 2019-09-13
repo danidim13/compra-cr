@@ -5,11 +5,15 @@
 #ifndef APP_ECOMMERCE_HTTP_H
 #define APP_ECOMMERCE_HTTP_H
 
-#include "Router.h"
-
 namespace http {
+    class Router;
+
     extern char *gpMethod;
     extern char *gpQueryString;
+    extern char *gpContentLength;
+    extern char *gpContentType;
+    extern char *gpRequestUri;
+    extern char *gpScriptName;
     extern char *gpPathInfo;
     extern int   giArgc;
     extern char **gsArgv;

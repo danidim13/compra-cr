@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "util/log.h"
 #include "http/http.h"
+#include "http/Router.h"
 #include "view/PageBuilder.h"
 
 

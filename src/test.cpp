@@ -40,8 +40,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    // test_dom();
-    test_builder();
+    test_dom();
+    // test_builder();
 
 }
 

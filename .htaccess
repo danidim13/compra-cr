@@ -1,2 +1,12 @@
 AddHandler cgi-script .cgi
 Options +ExecCGI
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+#     RewriteRule    ^(\.well-known/.*)$ $1 [L]
+#     RewriteRule    ^$    webroot/    [L]
+    RewriteRule ^$ app_ecommerce.cgi/product/list
+    RewriteRule ^((?!app_ecommerce\.cgi)(.+))$ app_ecommerce.cgi/$2 [L]
+</IfModule>
+

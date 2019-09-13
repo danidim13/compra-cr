@@ -13,7 +13,9 @@ namespace http {
         Router();
         void parse_request();
 
-    private:
+        typedef std::unordered_map<std::string, std::string> m_queryMap_type;
+
+    protected:
 
         /**
          * Parses query string arguments, stores mapped values on m_queryMap
@@ -21,8 +23,7 @@ namespace http {
          */
         unsigned long parse_query_string();
 
-        std::unordered_map<std::string, std::string> m_queryMap;
-
+        m_queryMap_type m_queryMap;
     };
 }
 

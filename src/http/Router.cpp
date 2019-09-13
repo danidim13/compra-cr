@@ -12,12 +12,18 @@
 
 http::Router::Router() {
 //    log_info(NULL, "Created Router");
-    http::gpPathInfo = getenv("PATH_INFO");
     http::gpMethod = getenv("REQUEST_METHOD");
     http::gpQueryString = getenv("QUERY_STRING");
+    http::gpContentLength = getenv("CONTENT_LENGTH");
+    http::gpContentType = getenv("CONTENT_TYPE");
+    http::gpRequestUri = getenv("REQUEST_URI");
+    http::gpScriptName = getenv("SCRIPT_NAME");
+    http::gpPathInfo = getenv("PATH_INFO");
 
     char sbuf[1024];
-    sprintf(sbuf, "Request received\nRequest method: %s\nPath info: %s\nQuery string: %s\nargc: %d\n", gpMethod, gpPathInfo, gpQueryString, giArgc);
+    sprintf(sbuf, "Request received\nRequest method: %s\nQuery string: %s\nContent length: %s\n"
+                  "Content type: %s\nRequest URI: %s\nScript name: %s\nPath info: %s\nargc: %d\n",
+                  gpMethod, gpQueryString, gpContentLength, gpContentType, gpRequestUri, gpScriptName, gpPathInfo, giArgc);
     log_debug(NULL, sbuf);
 }
 
