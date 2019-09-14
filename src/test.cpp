@@ -8,28 +8,51 @@
 #include <iostream>
 #include <mysql_driver.h>
 #include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <vector>
+#include "model/model.h"
+#include "model/User.h"
 
 void test_sql() {
     sql::mysql::MySQL_Driver *driver;
-    sql::Connection *conn;
-    driver = sql::mysql::get_mysql_driver_instance();
+    std::unique_ptr<sql::Connection> conn;
+    std::unique_ptr<sql::Statement> stmt;
+    std::unique_ptr<sql::ResultSet> res;
 
     try {
-        conn = driver->connect("localhost", "ecommerce_app", "seguridad2019");
-    } catch (sql::SQLException e) {
+        driver = sql::mysql::get_mysql_driver_instance();
+        conn = std::unique_ptr<sql::Connection>(driver->connect("localhost", "ecommerce_app", "seguridad2019"));
 
-        std::cout << "Conexión fallida: " << "[" << e.getErrorCode() << "] " << e.what() << std::endl;
+        if (conn->isValid()) {
+            std::cout << "Conexión exitosa!" << std::endl;
+        } else {
+            std::cout << "Conexión fallida :(" << std::endl;
+        }
+
+        conn->setSchema("ecommerce");
+
+        stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+        res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery("SELECT id, username FROM users"));
+        std::vector<model::User> users;
+        while(res->next()) {
+            model::User user;
+            user.set_from_row(res.get(), {"id", "username"});
+            users.push_back(user);
+        }
+
+        for (auto user: users) {
+            std::cout << "ID " << user.id();
+            std::cout << ", USERNAME " << user.username();
+            std::cout << std::endl;
+        }
+
+    } catch (sql::SQLException e) {
+        std::cout << "SQL Error" << "[" << e.getErrorCode() << "] " << e.what() << std::endl;
         exit(1);
     }
 
 
-    if (conn->isValid()) {
-        std::cout << "Conexión exitosa!" << std::endl;
-    } else {
-        std::cout << "Conexión fallida :(" << std::endl;
-    }
-
-    delete conn;
 //    sql::ConnectOptionsMap()
 }
 
