@@ -6,6 +6,10 @@ Aplicación de compra y venta de bienes
 
 TODO
 
+libmysqlclient mysqlclient-dev
+libmysqlcppconn libmysqlcppconn-dev
+
+
 ## Features
 
 ### 1. Usuario visitante
