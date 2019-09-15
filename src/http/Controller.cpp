@@ -9,6 +9,7 @@
 #include "../view/PageBuilder.h"
 #include "../view/ProductCard.h"
 #include "../view/product/ProductListBuilder.h"
+#include "../view/user/UserAddBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -26,7 +27,9 @@ void http::Controller::processAction() {
                 || req.m_Action.compare("/product/index") == 0
                 || req.m_Action.compare("/") == 0 )
             product_list();
-
+        else if (req.m_Action.compare("/user/add") ==  0) {
+            user_add_get();
+        }
         else {
             // TODO: return 404 not found
 
@@ -68,4 +71,14 @@ void http::Controller::product_list() {
 
     view::ProductListBuilder pageBuilder(title, cards);
     std::cout << pageBuilder.build_document() << std::endl;
+}
+
+void http::Controller::user_add_get() {
+
+    view::UserAddBuilder pageBuilder("Registrarse");
+    std::cout <<  pageBuilder.build_document() << std::endl;
+}
+
+void http::Controller::user_add_post() {
+
 }

@@ -18,7 +18,8 @@ public:
     Controller();
 
     void processAction();
-
+    void user_add_get();
+    void user_add_post();
     void product_list();
 
 private:
