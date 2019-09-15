@@ -44,7 +44,7 @@ std::string view::DomItem::to_string() const {
     return builder.str();
 }
 
-std::ostream &operator<<(std::ostream &os, const view::DomItem &item) {
+std::ostream &view::operator<<(std::ostream &os, const view::DomItem &item) {
     os << item.to_string();
     return os;
 }

@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "PageBuilder.h"
+#include "ProductCard.h"
 
 std::string view::PageBuilder::build_document() {
     std::ostringstream document_builder;
@@ -95,7 +96,21 @@ std::string view::PageBuilder::build_body() {
             </div>
             <!-- Fin barra de búsqueda -->
 )";
+    body << build_content();
+
     body << R"(
+
+        </div>
+    </main>
+    <!-- Fin contenido -->
+)";
+    return body.str();
+}
+
+std::string view::PageBuilder::build_content() {
+    std::ostringstream content;
+
+    content << R"(
             <!-- Inicio Ofertas/últimos artículos -->
             <div class="row bg-white latest-items">
                 <div class="col">
@@ -107,15 +122,15 @@ std::string view::PageBuilder::build_body() {
                     </div>)";
     //////////////
     // DECK ROW //
-    body << R"(
+    content << R"(
                     <div class="row">
                         <!-- Inicio del card deck-->
                         <div class="card-deck mx-3 my-3">
 )";
-    body << build_product_card("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
-    body << build_product_card("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00");
-    body << build_product_card("Ejemplo", "detalle de ejemplo", "500000");
-    body << R"(
+    content << ProductCard("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    content << ProductCard("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00 ");
+    content << ProductCard();
+    content << R"(
                         </div>
                         <!-- Fin del card deck   -->
                     </div>
@@ -125,15 +140,15 @@ std::string view::PageBuilder::build_body() {
 
     //////////////
     // DECK ROW //
-    body << R"(
+    content << R"(
                     <div class="row">
                         <!-- Inicio del card deck-->
                         <div class="card-deck mx-3 my-3">
 )";
-    body << build_product_card("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
-    body << build_product_card("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00");
-    body << build_product_card("Ejemplo", "detalle de ejemplo", "500000");
-    body << R"(
+    content << ProductCard("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    content << ProductCard("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00 ");
+    content << ProductCard();
+    content << R"(
                         </div>
                         <!-- Fin del card deck   -->
                     </div>
@@ -141,20 +156,14 @@ std::string view::PageBuilder::build_body() {
     //          //
     //////////////
 
-    body << R"(
+    content << R"(
 
                     <div class="my-5"></div>
                 </div>
             </div>
             <!-- Fin Ofertas/últimos artículos -->
 )";
-    body << R"(
-
-        </div>
-    </main>
-    <!-- Fin contenido -->
-)";
-    return body.str();
+    return content.str();
 }
 
 std::string view::PageBuilder::build_footer() {
@@ -177,29 +186,4 @@ std::string view::PageBuilder::build_footer() {
 )";
 }
 
-std::string view::PageBuilder::build_product_card(std::string title, std::string detail, std::string price) {
-    std::ostringstream card;
-    card << R"(
-        <div class="card">
-            <img src="https://via.placeholder.com/350x250" class="card-img-top" alt="imagen.jpg">
-            <div class="card-body">
-                <h4 class="card-title"> )";
-    card << title << std::endl;
-    card << R"(
-                </h4>
-                <p class="card-text"> )";
-    card << detail << std::endl;
-    card << R"(
-                </p>
-            </div>
-            <div class="card-body">
-                <p class="card-text"> )";
-    card << price << std::endl;
-    card << R"(
-                </p>
-            </div>
-        </div>
-    )";
 
-    return card.str();
-}

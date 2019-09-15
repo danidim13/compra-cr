@@ -74,21 +74,21 @@ void test_latest_products() {
 }
 
 void test_dom() {
-    DomItem item1("a",
+    view::DomItem item1("a",
             {
                 {"class", "nav-item nav-link"},
                 {"href", "#"}
             },
-            DomItem::SIMPLE, nullptr);
+            view::DomItem::SIMPLE, nullptr);
 
-    DomItem item2("input",
+    view::DomItem item2("input",
                   {
                           {"class", "form-input"},
                           {"type", "password"}
                   },
-                  DomItem::OPEN, nullptr);
+                  view::DomItem::OPEN, nullptr);
 
-    NavItem item3("local",
+    view::NavItem item3("local",
             "Inicio",
             {
                 {"class", "nav-item nav-link"},
@@ -100,7 +100,7 @@ void test_dom() {
 }
 
 void test_builder() {
-    PageBuilder pageBuilder;
+    view::PageBuilder pageBuilder;
     std::cout << pageBuilder.build_document() << std::endl;
 }
 

@@ -13,12 +13,12 @@ namespace view {
 
 class PageBuilder {
 public:
-    std::string build_document();
-    std::string build_head();
-    std::string build_header();
-    std::string build_body();
-    std::string build_footer();
-    std::string build_product_card(std::string title, std::string detail, std::string price);
+    virtual std::string build_document();
+    virtual std::string build_head();
+    virtual std::string build_header();
+    virtual std::string build_body();
+    virtual std::string build_content();
+    virtual std::string build_footer();
 };
 
 }

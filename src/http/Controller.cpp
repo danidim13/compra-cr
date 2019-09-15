@@ -7,6 +7,8 @@
 #include "../model/Product.h"
 #include "http.h"
 #include "../view/PageBuilder.h"
+#include "../view/ProductCard.h"
+#include "../view/product/ProductListBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -40,17 +42,30 @@ void http::Controller::processAction() {
 }
 
 void http::Controller::product_list() {
-    std::vector<model::Product> itemList;
+
     Request req = router->get_request();
+    std::vector<model::Product> itemList;
+    std::list<view::ProductCard> cards;
+    std::string title;
 
     auto it = req.m_queryMap.find("search");
 
     if (it != req.m_queryMap.end()) {
-        itemList = model::Product::getLatestN(6);
+        // Hubo una búsqueda
+        title = "Resultado de búsqueda";
+        itemList = model::Product::getLatestN(4);
+        for (auto item: itemList) {
+            cards.push_back(view::ProductCard(item.title(), item.detail(), item.unit_price()));
+        }
     } else {
+        // No hay búsqueda, listar los 6 más recientes
+        title = "Lo último";
         itemList = model::Product::getLatestN(6);
+        for (auto item: itemList) {
+            cards.push_back(view::ProductCard(item.title(), item.detail(), item.unit_price()));
+        }
     }
 
-    view::PageBuilder pageBuilder;
+    view::ProductListBuilder pageBuilder(title, cards);
     std::cout << pageBuilder.build_document() << std::endl;
 }
