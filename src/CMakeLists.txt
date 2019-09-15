@@ -3,24 +3,30 @@ set(core_SRCS
         util/log.cpp util/log.h
         http/http.cpp http/http.h
         http/Router.cpp http/Router.h
+        http/Request.cpp http/Request.h
+        http/Controller.cpp http/Controller.h
         view/PageBuilder.cpp view/PageBuilder.h
         view/DomItem.cpp view/DomItem.h
         view/NavItem.cpp view/NavItem.h
-        http/Request.cpp http/Request.h
         model/model.cpp model/model.h
         model/ConectionHandler.h
         model/User.cpp model/User.h
         model/Product.cpp model/Product.h
-        http/Controller.cpp http/Controller.h)
+        view/ProductCard.cpp view/ProductCard.h)
 
 
 add_library(core ${core_SRCS})
 
-find_path(MYSQLCPP_INCLUDE_DIR mysql_connections.h)
-find_library(MYSQLCPP_LIBRARY libmysqlcppconn.so)
+find_path(MYSQLCPP_INCLUDE_DIR mysql_connection.h)
+#find_library(MYSQLCPP_LIBRARY libmysqlcppconn.so)
+find_library(MYSQLCPP_LIBRARY NAMES  libmysqlclient.a libmysqlcppconn-static.a)
 
-if((NOT MYSQLCPP_INCLUDE_DIR) OR (NOT MYSQLCPP_LIBRARY))
-    message(FATAL_ERROR "libmysqlcppconn not found, try installing with apt-get install libmysqlcppconn-dev")
+if(NOT MYSQLCPP_INCLUDE_DIR)
+    message(${MYSQLCPP_INCLUDE_DIR})
+    message(FATAL_ERROR "mysql_connections.h not found, try installing with apt-get install libmysqlcppconn-dev")
+elseif(NOT MYSQLCPP_LIBRARY)
+    message(${MYSQLCPP_LIBRARY})
+    message(FATAL_ERROR "libmysqlcppconn.so not found, try installing with apt-get install libmysqlcppconn-dev")
 else()
     message(STATUS "FOUND libmsqlcppconn")
 endif()

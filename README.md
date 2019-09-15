@@ -9,6 +9,12 @@ TODO
 libmysqlclient mysqlclient-dev
 libmysqlcppconn libmysqlcppconn-dev
 
+Habilitar mod_rewrite y mod_cgi
+
+sudo a2enmod rewrite cgi
+sudo systemctl restart apache2 
+
+Agregar configuración del sitio en /etc/apache2/sites-available
 
 ## Features
 

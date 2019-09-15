@@ -7,18 +7,23 @@
 
 
 #include <string>
+#include <map>
 
 namespace http{
 
     class Request {
+    public:
+        bool valid;
         std::string m_Method;
-        std::string m_QueryString;
-        std::string m_ContentLength;
+        std::map<std::string, std::string> m_queryMap;
+        size_t m_ContentLength;
         std::string m_ContentType;
         std::string m_Content;
         std::string m_RequestUri;
         std::string m_ScriptName;
         std::string m_PathInfo;
+
+        std::string m_Action;
     };
 
 }

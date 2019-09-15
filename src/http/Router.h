@@ -5,15 +5,16 @@
 #ifndef APP_ECOMMERCE_ROUTER_H
 #define APP_ECOMMERCE_ROUTER_H
 
-#include <unordered_map>
+#include <map>
+#include <set>
+#include "Request.h"
 
 namespace http {
     class Router {
     public:
         Router();
         void parse_request();
-
-        typedef std::unordered_map<std::string, std::string> m_queryMap_type;
+        Request &get_request();
 
     protected:
 
@@ -23,7 +24,11 @@ namespace http {
          */
         unsigned long parse_query_string();
 
-        m_queryMap_type m_queryMap;
+        http::Request m_request;
+
+        std::map<std::string, std::string> m_aliases;
+        std::set<std::string> m_getActions;
+        std::set<std::string> m_postActions;
     };
 }
 

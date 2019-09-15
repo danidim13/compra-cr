@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include "Router.h"
 
 #define LATEST 10
 
@@ -14,10 +15,14 @@ namespace http {
 
 class Controller {
 public:
+    Controller();
 
-    void product_list(std::string query = "");
+    void processAction();
+
+    void product_list();
 
 private:
+    Router *router;
 
 };
 

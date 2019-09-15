@@ -79,10 +79,10 @@ std::string PageBuilder::build_body() {
             <!-- Inicio barra de búsqueda -->
             <div class="row bg-white">
                 <div class="col my-4">
-                    <form action="search" method="GET" role="search">
+                    <form action="/product/list" method="GET" role="search">
                         <div class="form-group row">
                             <div class="col-10">
-                                <input type="text" class="form-control" placeholder="Búsqueda de productos">
+                                <input type="text" name="search" class="form-control" placeholder="Búsqueda de productos">
                             </div>
                             <div class="col-2">
                                 <button type="submit" class="btn btn-primary btn-block">Buscar</button>
@@ -181,4 +181,8 @@ std::string PageBuilder::build_footer() {
     </footer>
     <!-- Fin footer -->
 )";
+}
+
+std::string PageBuilder::build_product_cards() {
+    return std::__cxx11::string();
 }

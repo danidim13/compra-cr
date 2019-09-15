@@ -5,20 +5,22 @@
 #include "Router.h"
 #include "../util/log.h"
 #include "http.h"
+#include "Request.h"
 #include <string>
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 
 http::Router::Router() {
 //    log_info(NULL, "Created Router");
-    http::gpMethod = getenv("REQUEST_METHOD");
-    http::gpQueryString = getenv("QUERY_STRING");
-    http::gpContentLength = getenv("CONTENT_LENGTH");
-    http::gpContentType = getenv("CONTENT_TYPE");
-    http::gpRequestUri = getenv("REQUEST_URI");
-    http::gpScriptName = getenv("SCRIPT_NAME");
-    http::gpPathInfo = getenv("PATH_INFO");
+    http::gpMethod = getenv("REQUEST_METHOD"); // GET o POST
+    http::gpQueryString = getenv("QUERY_STRING"); // ?param1=val&param2=val+compuesto
+    http::gpContentLength = getenv("CONTENT_LENGTH"); // para POST, lo que hay que leer de stdin
+    http::gpContentType = getenv("CONTENT_TYPE"); // para POSt, tipo de lo que sea lea
+    http::gpRequestUri = getenv("REQUEST_URI"); // dirección completa p.ej. /ProyectoSeguridad/article/view?id=1
+    http::gpScriptName = getenv("SCRIPT_NAME"); // dirección desde htdocs del ejecutable (se puede usar para construir links)
+    http::gpPathInfo = getenv("PATH_INFO"); // dirección relativa (desde script)
 
     char sbuf[1024];
     sprintf(sbuf, "Request received\nRequest method: %s\nQuery string: %s\nContent length: %s\n"
@@ -29,21 +31,52 @@ http::Router::Router() {
 
 void http::Router::parse_request() {
 
-    std::string method(http::gpMethod);
+    m_request.valid = false;
 
-    if (method.compare("GET") == 0) {
-        log_info(NULL, (char*)"GET request");
-    } else if (method.compare("POST") == 0) {
-        log_info(NULL, (char*)"POST request");
+    if (strcmp(gpMethod, "GET") == 0) {
+
+        m_request.m_Method = std::string(gpMethod);
+        log_debug(NULL, (char*)"GET request");
+
+    } else if (strcmp(gpMethod, "POST") == 0) {
+
+        m_request.m_Method = std::string(gpMethod);
+        log_debug(NULL, (char*)"POST request");
+
+        if (atoll(gpContentLength) > 0){
+            sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
+            char buffer[m_request.m_ContentLength];
+            std::cin.read(buffer, m_request.m_ContentLength);
+            m_request.m_Content = std::string(m_request.m_Content);
+
+            // Hacer algo con CONTENT_TYPE?
+            m_request.m_ContentType = std::string(gpContentType);
+
+        } else {
+            log_error(NULL, (char*)"Unexpected CONTENT_LENGTH value");
+            return;
+        }
     } else {
-        std::string error_msg("Unrecognized request method: ");
-        error_msg.append(method);
+        std::string error_msg("Unrecognized m_request method: ");
+        error_msg.append(gpMethod);
         log_error(NULL, (char*)error_msg.c_str());
         return;
     }
 
     this->parse_query_string();
 
+    m_request.m_RequestUri = std::string(gpRequestUri);
+    m_request.m_ScriptName = std::string(gpScriptName);
+
+    m_request.m_PathInfo = std::string(gpPathInfo);
+    auto alias_it = m_aliases.find(m_request.m_PathInfo);
+    if (alias_it != m_aliases.end()) {
+        m_request.m_Action = alias_it->second;
+    } else {
+        m_request.m_Action = m_request.m_PathInfo;
+    }
+    m_request.valid = true;
+    return;
 }
 
 unsigned long http::Router::parse_query_string() {
@@ -82,7 +115,7 @@ unsigned long http::Router::parse_query_string() {
             token = strtok(NULL, "=");
             if (token) {
                 std::string value(token);
-                m_queryMap[key] = value;
+                m_request.m_queryMap[key] = value;
             } else {
                 sprintf(sbuf, "Invalid format on query token \"%s\"", it->c_str());
                 log_error(NULL, sbuf);
@@ -92,5 +125,9 @@ unsigned long http::Router::parse_query_string() {
         }
 
     }
-    return m_queryMap.size();
+    return m_request.m_queryMap.size();
+}
+
+http::Request &http::Router::get_request() {
+    return m_request;
 }
