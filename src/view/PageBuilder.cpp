@@ -59,7 +59,9 @@ std::string PageBuilder::build_header() {
 }
 
 std::string PageBuilder::build_body() {
-    return R"(
+    std::ostringstream body;
+
+    body << R"(
     <!-- Inicio contenido -->
     <main>
         <div class="container">
@@ -92,7 +94,8 @@ std::string PageBuilder::build_body() {
                 </div>
             </div>
             <!-- Fin barra de búsqueda -->
-
+)";
+    body << R"(
             <!-- Inicio Ofertas/últimos artículos -->
             <div class="row bg-white latest-items">
                 <div class="col">
@@ -101,66 +104,57 @@ std::string PageBuilder::build_body() {
                         <div class="col">
                             <h1 class="my-3" style="font-family: 'Alfa Slab One', cursive;">Ofertas</h1>
                         </div>
-                    </div>
-
+                    </div>)";
+    //////////////
+    // DECK ROW //
+    body << R"(
                     <div class="row">
                         <!-- Inicio del card deck-->
-                        <div class="card-deck mx-3">
-
-                            <div class="card">
-                                <img src="https://via.placeholder.com/350x250" class="card-img-top" alt="imagen.jpg">
-                                <div class="card-body">
-                                    <h4 class="card-title">
-                                        Motoguadaña Husqvarna
-                                    </h4>
-                                    <p class="card-text">Usada por 3 meses, en excelentes condiciones</p>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">
-                                        ₡ 58.000,00
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <img src="https://via.placeholder.com/350x250" class="card-img-top" alt="imagen.jpg">
-                                <div class="card-body">
-                                    <h4 class="card-title">
-                                        Motoguadaña Husqvarna
-                                    </h4>
-                                    <p class="card-text">Usada por 3 meses, en excelentes condiciones</p>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">
-                                        ₡ 58.000,00
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <img src="https://via.placeholder.com/350x250" class="card-img-top" alt="imagen.jpg">
-                                <div class="card-body">
-                                    <h4 class="card-title">
-                                        Motoguadaña Husqvarna
-                                    </h4>
-                                    <p class="card-text">XYX</p>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">
-                                        ₡ 58.000,00
-                                    </p>
-                                </div>
-                            </div>
+                        <div class="card-deck mx-3 my-3">
+)";
+    body << build_product_card("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    body << build_product_card("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00");
+    body << build_product_card("Ejemplo", "detalle de ejemplo", "500000");
+    body << R"(
                         </div>
                         <!-- Fin del card deck   -->
                     </div>
+)";
+    //          //
+    //////////////
+
+    //////////////
+    // DECK ROW //
+    body << R"(
+                    <div class="row">
+                        <!-- Inicio del card deck-->
+                        <div class="card-deck mx-3 my-3">
+)";
+    body << build_product_card("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    body << build_product_card("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00");
+    body << build_product_card("Ejemplo", "detalle de ejemplo", "500000");
+    body << R"(
+                        </div>
+                        <!-- Fin del card deck   -->
+                    </div>
+)";
+    //          //
+    //////////////
+
+    body << R"(
+
                     <div class="my-5"></div>
                 </div>
             </div>
             <!-- Fin Ofertas/últimos artículos -->
+)";
+    body << R"(
 
         </div>
     </main>
     <!-- Fin contenido -->
 )";
+    return body.str();
 }
 
 std::string PageBuilder::build_footer() {
@@ -183,6 +177,29 @@ std::string PageBuilder::build_footer() {
 )";
 }
 
-std::string PageBuilder::build_product_cards() {
-    return std::__cxx11::string();
+std::string PageBuilder::build_product_card(std::string title, std::string detail, std::string price) {
+    std::ostringstream card;
+    card << R"(
+        <div class="card">
+            <img src="https://via.placeholder.com/350x250" class="card-img-top" alt="imagen.jpg">
+            <div class="card-body">
+                <h4 class="card-title"> )";
+    card << title << std::endl;
+    card << R"(
+                </h4>
+                <p class="card-text"> )";
+    card << detail << std::endl;
+    card << R"(
+                </p>
+            </div>
+            <div class="card-body">
+                <p class="card-text"> )";
+    card << price << std::endl;
+    card << R"(
+                </p>
+            </div>
+        </div>
+    )";
+
+    return card.str();
 }

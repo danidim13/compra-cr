@@ -16,7 +16,7 @@ public:
     std::string build_header();
     std::string build_body();
     std::string build_footer();
-    std::string build_product_cards();
+    std::string build_product_card(std::string title, std::string detail, std::string price);
 };
 
 
