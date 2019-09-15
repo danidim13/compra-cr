@@ -13,6 +13,7 @@
 #include <vector>
 #include "model/model.h"
 #include "model/User.h"
+#include "model/Product.h"
 
 void test_sql() {
     sql::mysql::MySQL_Driver *driver;
@@ -33,11 +34,12 @@ void test_sql() {
         conn->setSchema("ecommerce");
 
         stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
-        res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery("SELECT id, username FROM users"));
+        res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery("SELECT * FROM users"));
         std::vector<model::User> users;
         while(res->next()) {
             model::User user;
-            user.set_from_row(res.get(), {"id", "username"});
+//            user.set_from_row(res.get(), {"id", "username"});
+            user.set_from_row(res.get());
             users.push_back(user);
         }
 
@@ -54,6 +56,21 @@ void test_sql() {
 
 
 //    sql::ConnectOptionsMap()
+}
+
+void test_latest_products() {
+    std::vector<model::Product> latest( std::move(model::Product::getLatestN(9)) );
+
+    if (!latest.empty()) {
+        for (std::vector<model::Product>::iterator it = latest.begin(); it != latest.end(); ++it) {
+            std::cout << "ID " << it->id();
+            std::cout << ", TITLE " << it->title();
+            std::cout << ", PRICE " << it->unit_price();
+            std::cout << std::endl;
+        }
+    } else {
+        std::cout << "No había ma'na" << std::endl;
+    }
 }
 
 void test_dom() {
@@ -89,7 +106,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    test_sql();
+    test_latest_products();
+//    test_sql();
 //    test_dom();
 //    test_builder();
 

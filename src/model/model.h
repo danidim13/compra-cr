@@ -7,9 +7,6 @@
 
 #include <string>
 #include <list>
-#include <vector>
-#include <set>
-#include <unordered_set>
 #include <cppconn/resultset.h>
 #include "mysql_driver.h"
 
@@ -45,7 +42,7 @@ namespace model{
         Entity() {};
         virtual ~Entity() {};
         virtual bool set_from_row(sql::ResultSet *res);
-        virtual bool set_from_row(sql::ResultSet *res, std::list<std::string> select);
+        virtual bool set_from_row(sql::ResultSet *res, const std::list<std::string> &select);
 //        virtual bool set_from_row(sql::ResultSet *res, std::vector<std::string> select);
 //        virtual bool set_from_row(sql::ResultSet *res, std::set<std::string> select);
 

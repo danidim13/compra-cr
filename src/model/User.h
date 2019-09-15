@@ -6,6 +6,7 @@
 #define APP_ECOMMERCE_USER_H
 
 #include "model.h"
+#include <string>
 
 namespace model {
 
@@ -22,7 +23,5 @@ public:
 };
 }
 
-#include <string>
-#include "mysql_driver.h"
 
 #endif //APP_ECOMMERCE_USER_H

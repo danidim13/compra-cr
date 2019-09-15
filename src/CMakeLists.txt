@@ -8,9 +8,10 @@ set(core_SRCS
         view/NavItem.cpp view/NavItem.h
         http/Request.cpp http/Request.h
         model/model.cpp model/model.h
-        model/ConectionHandler.cpp model/ConectionHandler.h
+        model/ConectionHandler.h
         model/User.cpp model/User.h
-)
+        model/Product.cpp model/Product.h
+        http/Controller.cpp http/Controller.h)
 
 
 add_library(core ${core_SRCS})

@@ -58,7 +58,7 @@ bool model::Entity::set_from_row(sql::ResultSet *res)
     }
 }
 
-bool model::Entity::set_from_row(sql::ResultSet *res, std::list<std::string> select)
+bool model::Entity::set_from_row(sql::ResultSet *res, const std::list<std::string> &select)
 {
     try {
         for (auto attrName: select) {
