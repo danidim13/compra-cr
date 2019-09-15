@@ -12,7 +12,7 @@ set(core_SRCS
         model/ConectionHandler.h
         model/User.cpp model/User.h
         model/Product.cpp model/Product.h
-        view/ProductCard.cpp view/ProductCard.h)
+        view/ProductCard.cpp view/ProductCard.h view/ProductBuilder.cpp view/ProductBuilder.h)
 
 
 add_library(core ${core_SRCS})

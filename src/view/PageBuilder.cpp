@@ -5,7 +5,7 @@
 #include <sstream>
 #include "PageBuilder.h"
 
-std::string PageBuilder::build_document() {
+std::string view::PageBuilder::build_document() {
     std::ostringstream document_builder;
     document_builder << R"(
 <!DOCTYPE html>
@@ -28,7 +28,7 @@ std::string PageBuilder::build_document() {
     return document_builder.str();
 }
 
-std::string PageBuilder::build_head() {
+std::string view::PageBuilder::build_head() {
     return R"(
 <head>
     <meta charset="UTF-8">
@@ -39,7 +39,7 @@ std::string PageBuilder::build_head() {
 )";
 }
 
-std::string PageBuilder::build_header() {
+std::string view::PageBuilder::build_header() {
     return R"(
     <header>
         <!-- Inicio navegación -->
@@ -58,7 +58,7 @@ std::string PageBuilder::build_header() {
 )";
 }
 
-std::string PageBuilder::build_body() {
+std::string view::PageBuilder::build_body() {
     std::ostringstream body;
 
     body << R"(
@@ -157,7 +157,7 @@ std::string PageBuilder::build_body() {
     return body.str();
 }
 
-std::string PageBuilder::build_footer() {
+std::string view::PageBuilder::build_footer() {
     return R"(
     <!-- Inicio footer -->
     <footer>
@@ -177,7 +177,7 @@ std::string PageBuilder::build_footer() {
 )";
 }
 
-std::string PageBuilder::build_product_card(std::string title, std::string detail, std::string price) {
+std::string view::PageBuilder::build_product_card(std::string title, std::string detail, std::string price) {
     std::ostringstream card;
     card << R"(
         <div class="card">

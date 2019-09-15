@@ -11,6 +11,9 @@
 #include <string>
 #include <ostream>
 
+
+namespace view {
+
 class DomItem {
 public:
 
@@ -46,5 +49,6 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const DomItem &item);
 };
 
+}
 
 #endif //APP_ECOMMERCE_DOMITEM_H

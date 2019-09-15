@@ -4,7 +4,7 @@
 
 #include "NavItem.h"
 
-NavItem::NavItem(const std::string &href, const std::string &content,
+view::NavItem::NavItem(const std::string &href, const std::string &content,
                  const std::unordered_map<std::string, std::string> &mAttributes)
         : DomItem("a", mAttributes, DomItem::SIMPLE, nullptr) {
     this->m_content = content;

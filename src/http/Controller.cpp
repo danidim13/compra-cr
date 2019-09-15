@@ -51,6 +51,6 @@ void http::Controller::product_list() {
         itemList = model::Product::getLatestN(6);
     }
 
-    PageBuilder pageBuilder;
+    view::PageBuilder pageBuilder;
     std::cout << pageBuilder.build_document() << std::endl;
 }

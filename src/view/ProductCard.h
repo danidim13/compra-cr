@@ -7,9 +7,12 @@
 
 #include "../model/Product.h"
 
+namespace view {
+
 class ProductCard {
 
 };
 
+}
 
 #endif //APP_ECOMMERCE_PRODUCTCARD_H

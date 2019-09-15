@@ -9,6 +9,8 @@
 
 // #define TEMPLATE_PATH "webroot/html/index.html"
 
+namespace view {
+
 class PageBuilder {
 public:
     std::string build_document();
@@ -19,6 +21,6 @@ public:
     std::string build_product_card(std::string title, std::string detail, std::string price);
 };
 
-
+}
 
 #endif //APP_ECOMMERCE_PAGEBUILDER_H

@@ -5,8 +5,8 @@
 #include <sstream>
 #include "DomItem.h"
 
-DomItem::DomItem(const std::string &mTag, const m_attributes_type &mAttributes,
-                 DomItem::DomContentType mContentType, DomItem *mParent) :
+view::DomItem::DomItem(const std::string &mTag, const m_attributes_type &mAttributes,
+                 view::DomItem::DomContentType mContentType, view::DomItem *mParent) :
         m_tag(mTag),
         m_attributes(mAttributes),
         m_parent(mParent), m_contentType(mContentType) {
@@ -16,7 +16,7 @@ DomItem::DomItem(const std::string &mTag, const m_attributes_type &mAttributes,
 // ContentType = NONE <{tag} {attr1}="{value1}" {attr2}="{value2}"/>
 // ContentType = SIMPLE <{tag} {attr1}="{value1}" {attr2}="{value2}">{std::string content}</tag>
 // ContentType = COMPLEX <{tag} {attr1}="{value1}" {attr2}="{value2}"/>{std::list children}</tag>
-std::string DomItem::to_string() const {
+std::string view::DomItem::to_string() const {
 
     std::ostringstream builder;
     builder << "<" << m_tag;
@@ -44,7 +44,7 @@ std::string DomItem::to_string() const {
     return builder.str();
 }
 
-std::ostream &operator<<(std::ostream &os, const DomItem &item) {
+std::ostream &operator<<(std::ostream &os, const view::DomItem &item) {
     os << item.to_string();
     return os;
 }
