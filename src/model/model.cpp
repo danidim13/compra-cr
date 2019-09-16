@@ -4,6 +4,8 @@
 
 #include <sstream>
 #include "model.h"
+#include "ConnectionHandler.h"
+#include <cstdlib>
 
 model::EntityAttr::EntityAttr() {
     attrType = model::NONE;
@@ -93,6 +95,79 @@ bool model::Entity::set_from_row(sql::ResultSet *res, const std::list<std::strin
         return false;
     }
 
+}
+
+bool model::Entity::set_from_map(const std::map<std::string, std::string> &map) {
+
+    for (auto pair: map) {
+        auto it = m_cols.find(pair.first);
+        if (it != m_cols.end()) {
+            switch (it->second.attrType) {
+                case model::INT: {
+                    it->second.attrValue.i = atoi(pair.second.c_str());
+                    break;
+                }
+                case model::UINT: {
+                    it->second.attrValue.u = strtoul(pair.second.c_str(), NULL, 10);
+                    break;
+                }
+                case model::STRING: {
+                    it->second.attrStr = pair.second;
+                    it->second.attrValue.str = (char*)it->second.attrStr.c_str();
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+    return false;
+}
+
+bool model::Entity::insert_autoId() {
+
+    assert(!table.empty());
+
+    std::ostringstream query;
+    std::ostringstream select;
+    std::ostringstream values;
+
+    select << "(";
+    values << "(";
+    size_t len = m_cols.size();
+
+    for (auto pair: m_cols) {
+        --len;
+        if (pair.first.compare("id") == 0) {
+            continue;
+        }
+        select << pair.first;
+        switch (pair.second.attrType) {
+            case model::INT: {
+                values << pair.second.attrValue.i;
+                break;
+            }
+            case model::UINT: {
+                values << pair.second.attrValue.u;
+                break;
+            }
+            case model::STRING: {
+                values << "'" << pair.second.attrStr << "'";
+                break;
+            }
+            default:
+                break;
+        }
+        if (len > 0) {
+            select << ", ";
+            values << ", ";
+        }
+    }
+    select << ")" ;
+    values << ")";
+    query << "INSERT INTO " << table << " " << select.str() << " VALUES " << values.str();
+
+    return model::ConnectionHandler::execute(query.str());
 }
 
 /*

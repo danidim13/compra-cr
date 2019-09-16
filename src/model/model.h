@@ -43,11 +43,15 @@ namespace model{
         virtual ~Entity() {};
         virtual bool set_from_row(sql::ResultSet *res);
         virtual bool set_from_row(sql::ResultSet *res, const std::list<std::string> &select);
+        virtual bool set_from_map(const std::map<std::string, std::string> &map);
+        virtual bool insert_autoId();
 //        virtual bool set_from_row(sql::ResultSet *res, std::vector<std::string> select);
 //        virtual bool set_from_row(sql::ResultSet *res, std::set<std::string> select);
 
+
     protected:
         std::map<std::string, EntityAttr> m_cols;
+        std::string table;
     };
 }
 

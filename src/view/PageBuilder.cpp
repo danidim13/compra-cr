@@ -48,9 +48,10 @@ std::string view::PageBuilder::build_header() {
             <div class="container">
                 <a class="navbar-brand" href="#">CompraCR</a>
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link ${ACTIVE = HOME}" href="#">Inicio</a>
-                    <a class="nav-item nav-link ${ACTIVE = SELL}" href="#">Vender</a>
-                    <a class="nav-item nav-link ${ACTIVE = CART}" href="#">Carrito de compras</a>
+                    <a class="nav-item nav-link" href="/">Inicio</a>
+                    <a class="nav-item nav-link" href="/user/add">Registrarse</a>
+                    <a class="nav-item nav-link" href="#">Vender</a>
+                    <a class="nav-item nav-link" href="#">Carrito de compras</a>
                 </div>
             </div>
         </nav>

@@ -2,8 +2,8 @@
 // Created by daniel on 14/09/19.
 //
 
-#ifndef APP_ECOMMERCE_CONECTIONHANDLER_H
-#define APP_ECOMMERCE_CONECTIONHANDLER_H
+#ifndef APP_ECOMMERCE_CONNECTIONHANDLER_H
+#define APP_ECOMMERCE_CONNECTIONHANDLER_H
 
 
 #include <vector>
@@ -17,6 +17,11 @@
 #include <sstream>
 #include "model.h"
 #include "../util/log.h"
+
+#define DB_HOST "localhost"
+#define DB_USER "ecommerce_app"
+#define DB_PASS "seguridad2019"
+#define DB_INST "ecommerce"
 
 namespace model {
 
@@ -33,7 +38,7 @@ class ConnectionHandler {
 public:
 
     template <class T>
-    static std::vector<T> executeQuery(const std::string &query) {
+    static std::vector<T> executeQuery(const std::string &query, const std::list<std::string> &select, const bool &useSel = true) {
         static_assert(std::is_base_of<Entity, T>::value, "T is not derived from Entity");
 
         sql::mysql::MySQL_Driver *driver;
@@ -48,14 +53,18 @@ public:
             driver = sql::mysql::get_mysql_driver_instance();
 //            conn = std::unique_ptr<sql::Connection>(driver->connect(model::ConnOptions()));
 
-            conn = std::unique_ptr<sql::Connection>(driver->connect("localhost", "ecommerce_app", "seguridad2019"));
-            conn->setSchema("ecommerce");
+            conn = std::unique_ptr<sql::Connection>(driver->connect(DB_HOST, DB_USER, DB_PASS));
+            conn->setSchema(DB_INST);
 
             stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
             res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery(query));
             while(res->next()) {
                 T entity;
-                entity.set_from_row(res.get());
+                if (useSel) {
+                    entity.set_from_row(res.get(), select);
+                } else {
+                    entity.set_from_row(res.get());
+                }
                 entities.push_back(entity);
             }
 
@@ -77,29 +86,25 @@ public:
     };
 
     template <class T>
-    static std::vector<T> executeQuery(const std::string &query, const std::list<std::string> &select) {
-        static_assert(std::is_base_of<Entity, T>::value, "T is not derived from Entity");
+    static std::vector<T> executeQuery(const std::string &query) {
+        return executeQuery<T>(query, {}, false);
+    };
 
+    static bool execute(const std::string &query) {
         sql::mysql::MySQL_Driver *driver;
         std::unique_ptr<sql::Connection> conn;
         std::unique_ptr<sql::Statement> stmt;
-        std::unique_ptr<sql::ResultSet> res;
-
-        std::vector<T> entities;
 
         try {
             driver = sql::mysql::get_mysql_driver_instance();
-            conn = std::unique_ptr<sql::Connection>(driver->connect(model::ConnOptions()));
+
+            conn = std::unique_ptr<sql::Connection>(driver->connect(DB_HOST, DB_USER, DB_PASS));
+            conn->setSchema(DB_INST);
 
             stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
-            res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery(query));
-            while(res->next()) {
-                T entity;
-                entity.set_from_row(res.get(), select);
-                entities.push_back(entity);
-            }
+            stmt->execute(query);
 
-            return entities;
+            return true;
         } catch (sql::SQLException e) {
             std::ostringstream error_msg;
             error_msg << "SQL Error (" << e.getErrorCode() << ") " << e.what()
@@ -110,13 +115,13 @@ public:
             std::cerr << error_msg.str();
             log_error(NULL, (char*)(error_msg.str().c_str()));
 
-            entities.clear();
-            return entities;
+            return false;
         }
 
-    };
+    }
+
 };
 
 }
 
-#endif //APP_ECOMMERCE_CONECTIONHANDLER_H
+#endif //APP_ECOMMERCE_CONNECTIONHANDLER_H

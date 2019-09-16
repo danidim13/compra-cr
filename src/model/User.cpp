@@ -7,6 +7,7 @@
 model::User::User()
 {
 
+    table = "users";
     m_cols = {
         {"id", EntityAttr(0u)},
         {"username", EntityAttr(std::string(""))},

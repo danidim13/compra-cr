@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     http::giArgc = argc;
     http::gsArgv = argv;
 
-    printf("Content-type: text/html; charset=utf-8\n\n");
+//    printf("Content-type: text/html; charset=utf-8\n\n");
 
 //    http::Router* router = http::get_router();
 //    router->parse_request();

@@ -9,7 +9,7 @@ set(core_SRCS
         view/DomItem.cpp view/DomItem.h
         view/NavItem.cpp view/NavItem.h
         model/model.cpp model/model.h
-        model/ConectionHandler.h
+        model/ConnectionHandler.h
         model/User.cpp model/User.h
         model/Product.cpp model/Product.h
         view/ProductCard.cpp view/ProductCard.h

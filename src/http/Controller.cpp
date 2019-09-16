@@ -2,15 +2,18 @@
 // Created by daniel on 14/09/19.
 //
 
+#include <sstream>
 #include "Controller.h"
 #include "../model/model.h"
 #include "../model/Product.h"
+#include "../model/User.h"
 #include "http.h"
 #include "../view/PageBuilder.h"
 #include "../view/ProductCard.h"
 #include "../view/product/ProductListBuilder.h"
 #include "../view/user/UserAddBuilder.h"
 #include "../util/log.h"
+#include "../util/decode.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -73,13 +76,13 @@ void http::Controller::product_list() {
     }
 
     view::ProductListBuilder pageBuilder(title, cards);
-    std::cout << pageBuilder.build_document() << std::endl;
+    std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
 }
 
 void http::Controller::user_add_get() {
 
     view::UserAddBuilder pageBuilder("Registrarse");
-    std::cout <<  pageBuilder.build_document() << std::endl;
+    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
 void http::Controller::user_add_post() {
@@ -91,4 +94,25 @@ void http::Controller::user_add_post() {
     log_debug(NULL, (char*)req.m_ContentType.c_str());
     log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
     log_debug(NULL, (char*)req.m_Content.c_str());
+
+    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+//    for (auto datum: data) {
+//        std::cout << datum.first << ": " << datum.second << std::endl;
+//    }
+
+    model::User user;
+    user.set_from_map(data);
+
+    if (user.insert_autoId()) {
+//        std::cout << "Exito" << std::endl;
+
+        std::ostringstream msg;
+        msg << "Created new user with username '" << user.username() << "'";
+        log_info(NULL, (char*) msg.str().c_str());
+
+        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+    } else {
+        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+    }
+
 }

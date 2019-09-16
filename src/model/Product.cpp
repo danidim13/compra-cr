@@ -4,10 +4,11 @@
 
 #include "Product.h"
 #include <sstream>
-#include "ConectionHandler.h"
+#include "ConnectionHandler.h"
 
 model::Product::Product()
 {
+    table = "products";
     m_cols = {
         {"id", EntityAttr(0u)},
         {"owner_id", EntityAttr(0u)},

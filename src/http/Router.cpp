@@ -4,6 +4,7 @@
 
 #include "Router.h"
 #include "../util/log.h"
+#include "../util/decode.h"
 #include "http.h"
 #include "Request.h"
 #include <string>
@@ -45,8 +46,9 @@ void http::Router::parse_request() {
 
         if (atoll(gpContentLength) > 0){
             sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
-            char buffer[m_request.m_ContentLength];
+            char buffer[m_request.m_ContentLength+1];
             std::cin.read(buffer, m_request.m_ContentLength);
+            buffer[m_request.m_ContentLength] = '\0';
             m_request.m_Content = std::string(buffer);
 
             // Hacer algo con CONTENT_TYPE?
@@ -63,7 +65,8 @@ void http::Router::parse_request() {
         return;
     }
 
-    this->parse_query_string();
+//    this->parse_query_string();
+    m_request.m_queryMap = split_query(http::gpQueryString);
 
     m_request.m_RequestUri = std::string(gpRequestUri);
     m_request.m_ScriptName = std::string(gpScriptName);
