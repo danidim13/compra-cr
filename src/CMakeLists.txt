@@ -16,7 +16,7 @@ set(core_SRCS
         view/product/ProductListBuilder.cpp view/product/ProductListBuilder.h
         view/user/UserAddBuilder.cpp view/user/UserAddBuilder.h
         view/Form.cpp view/Form.h
-        view/FormInput.cpp view/FormInput.h util/decode.h util/decode.cpp)
+        view/FormInput.cpp view/FormInput.h util/decode.h util/decode.cpp view/product/ProductAddBuilder.cpp view/product/ProductAddBuilder.h)
 
 
 add_library(core ${core_SRCS})

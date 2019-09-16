@@ -21,7 +21,7 @@ std::string view::Form::to_string() const {
     form << R"(
     <div class="row">
         <div class="col">
-            <form action="/user/add" method="POST">)" << std::endl;
+            <form action=")" << action << R"(" method=")" << method <<R"(">)" << std::endl;
     for (auto input: inputs) {
         form << input;
     }

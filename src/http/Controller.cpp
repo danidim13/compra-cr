@@ -14,6 +14,7 @@
 #include "../view/user/UserAddBuilder.h"
 #include "../util/log.h"
 #include "../util/decode.h"
+#include "../view/product/ProductAddBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -34,6 +35,9 @@ void http::Controller::processAction() {
         else if (req.m_Action.compare("/user/add") ==  0) {
             user_add_get();
         }
+        else if (req.m_Action.compare("/product/add") == 0) {
+            product_add_get();
+        }
         else {
             // TODO: return 404 not found
 
@@ -43,6 +47,9 @@ void http::Controller::processAction() {
         // TODO: lista de acciones post
         if (req.m_Action.compare("/user/add") == 0) {
             user_add_post();
+        }
+        else if (req.m_Action.compare("/product/add") == 0) {
+            product_add_post();
         }
 
     } else {
@@ -77,6 +84,44 @@ void http::Controller::product_list() {
 
     view::ProductListBuilder pageBuilder(title, cards);
     std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
+}
+
+void http::Controller::product_add_get() {
+
+    view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
+    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+}
+
+void http::Controller::product_add_post() {
+
+    Request req = router->get_request();
+
+
+    log_debug(NULL, (char*)"POST request en /product/add");
+    log_debug(NULL, (char*)req.m_ContentType.c_str());
+    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
+    log_debug(NULL, (char*)req.m_Content.c_str());
+
+    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+//    for (auto datum: data) {
+//        std::cout << datum.first << ": " << datum.second << std::endl;
+//    }
+
+    model::Product product;
+    product.set_from_map(data);
+
+    if (product.insert_autoId()) {
+//        std::cout << "Exito" << std::endl;
+
+        std::ostringstream msg;
+        msg << "Created new product with title'" << product.title() << "'";
+        log_info(NULL, (char*) msg.str().c_str());
+
+        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+    } else {
+        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+    }
+
 }
 
 void http::Controller::user_add_get() {
