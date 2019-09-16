@@ -8,6 +8,7 @@
 
 
 int main(int argc, char* argv[]) {
+//    freopen("login.txt","r",stdin);
 
     http::giArgc = argc;
     http::gsArgv = argv;

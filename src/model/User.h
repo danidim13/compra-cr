@@ -20,6 +20,8 @@ public:
     std::string last_name(); // varchar(50) null;
     std::string email(); // varchar(256) character set ascii not null unique;
     std::string phone(); // varchar(50) null
+
+    static std::pair<bool, std::string> login(std::string username);
 };
 }
 

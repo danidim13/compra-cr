@@ -15,6 +15,7 @@
 #include "../util/log.h"
 #include "../util/decode.h"
 #include "../view/product/ProductAddBuilder.h"
+#include "../view/user/UserLoginBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -38,6 +39,9 @@ void http::Controller::processAction() {
         else if (req.m_Action.compare("/product/add") == 0) {
             product_add_get();
         }
+        else if (req.m_Action.compare("/user/login") == 0) {
+            user_login_get();
+        }
         else {
             // TODO: return 404 not found
 
@@ -47,6 +51,9 @@ void http::Controller::processAction() {
         // TODO: lista de acciones post
         if (req.m_Action.compare("/user/add") == 0) {
             user_add_post();
+        }
+        if (req.m_Action.compare("/user/login") == 0) {
+            user_login_post();
         }
         else if (req.m_Action.compare("/product/add") == 0) {
             product_add_post();
@@ -160,4 +167,63 @@ void http::Controller::user_add_post() {
         std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
     }
 
+}
+
+void http::Controller::user_login_get() {
+
+    Request req = router->get_request();
+    std::string errors("");
+
+    auto it = req.m_queryMap.find("error");
+    if (it != req.m_queryMap.end()) {
+        errors = it->second;
+    }
+
+    view::UserLoginBuilder pageBuilder("Acceder al sistema", errors);
+    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+
+}
+
+void http::Controller::user_login_post() {
+
+    Request req = router->get_request();
+
+
+    log_debug(NULL, (char*)"POST request en /user/login");
+    log_debug(NULL, (char*)req.m_ContentType.c_str());
+    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
+    log_debug(NULL, (char*)req.m_Content.c_str());
+
+    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+
+    std::ostringstream msg;
+
+    auto it = data.find("username");
+    if (it != data.end()) {
+        auto res = model::User::login(it->second);
+        if (res.first) {
+            // Login exitoso
+
+//            msg << "Created new user with username '" << user.username() << "'";
+//            log_info(NULL, (char*) msg.str().c_str());
+
+            std::cout << "Status: 302 Found\n"
+                      << "Set-Cookie: user_id=" << res.second <<"\n"
+                      << "Location: /?login=success\n\n";
+
+
+        } else {
+
+            msg << "Error de login: " << res.second;
+            log_debug(NULL, (char*) msg.str().c_str());
+            std::cout << "Status: 303 See Other\n"
+                      << "Location: /user/login?error=" << res.second << "\n\n";
+
+        }
+    } else {
+        // Error de formulario
+        std::cout << "Status: 303 See Other\n"
+                  << "Location: /user/login?error=Por+favor+indique+su+usuario\n\n";
+
+    }
 }
