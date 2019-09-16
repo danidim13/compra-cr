@@ -14,6 +14,7 @@
 #include "model/model.h"
 #include "model/User.h"
 #include "model/Product.h"
+#include "util/decode.h"
 
 void test_sql() {
     sql::mysql::MySQL_Driver *driver;
@@ -99,6 +100,25 @@ void test_dom() {
 
 }
 
+void test_decode() {
+
+    char str1[] = "search=canci%C3%B3n";
+    char str2[] = "username=danidim13&surname=Daniel&last_name=D%C3%ADaz+Molina&email=daniel.correo%40gmail.com&phone=8707-8691";
+    char str3[] = "username=danidim13&surname=Daniel&last_name=D%C3%ADaz+Molina&email=daniel.correo%40gmail.com&phone=8707-8691";
+    std::string str1_dec(url_decode(str1));
+    std::cout << str1_dec << std::endl;
+    std::cout << url_decode(str2) << std::endl;
+
+    url_decode(str3, str3);
+    printf("%s\n", str3);
+
+    std::map<std::string, std::string> qMap = split_query(str2);
+    for (auto pair: qMap) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+    }
+
+}
+
 void test_builder() {
     view::PageBuilder pageBuilder;
     std::cout << pageBuilder.build_document() << std::endl;
@@ -106,7 +126,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    test_latest_products();
+    test_decode();
+//    test_latest_products();
 //    test_sql();
 //    test_dom();
 //    test_builder();

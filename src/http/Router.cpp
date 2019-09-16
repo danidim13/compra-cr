@@ -47,7 +47,7 @@ void http::Router::parse_request() {
             sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
             char buffer[m_request.m_ContentLength];
             std::cin.read(buffer, m_request.m_ContentLength);
-            m_request.m_Content = std::string(m_request.m_Content);
+            m_request.m_Content = std::string(buffer);
 
             // Hacer algo con CONTENT_TYPE?
             m_request.m_ContentType = std::string(gpContentType);

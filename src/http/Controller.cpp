@@ -10,6 +10,7 @@
 #include "../view/ProductCard.h"
 #include "../view/product/ProductListBuilder.h"
 #include "../view/user/UserAddBuilder.h"
+#include "../util/log.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -37,7 +38,9 @@ void http::Controller::processAction() {
 
     } else if (req.m_Method.compare("POST") == 0) {
         // TODO: lista de acciones post
-
+        if (req.m_Action.compare("/user/add") == 0) {
+            user_add_post();
+        }
 
     } else {
         // wtf
@@ -81,4 +84,11 @@ void http::Controller::user_add_get() {
 
 void http::Controller::user_add_post() {
 
+    Request req = router->get_request();
+
+
+    log_debug(NULL, (char*)"POST request en /user/add");
+    log_debug(NULL, (char*)req.m_ContentType.c_str());
+    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
+    log_debug(NULL, (char*)req.m_Content.c_str());
 }
