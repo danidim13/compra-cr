@@ -31,11 +31,11 @@ std::string view::UserAddBuilder::build_body() {
                     </div>)";
 
     body << view::Form("POST", "/user/add", {
-            {"Nombre de usuarios", "username", "ejemplo"},
+            {"Nombre de usuario", "username", "ejemplo"},
             {"Nombre", "surname", "Nombre"},
             {"Apellido(s)", "last_name", "Apellidos"},
             {"Correo electrónico", "email", "ejemplo@gmail.com"},
-            {"Teléfono", "phone", "8707-8691"}
+            {"Teléfono", "phone", "8080-2020"}
     }) << std::endl;
 
     body << R"(
