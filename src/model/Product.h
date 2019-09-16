@@ -24,6 +24,7 @@ public:
     unsigned int stock(); // int unsigned not null
 
     static std::vector<Product> getLatestN(unsigned int n);
+    static std::vector<Product> search(std::string keyword);
 };
 }
 

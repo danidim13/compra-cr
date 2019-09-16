@@ -60,3 +60,14 @@ std::vector<model::Product> model::Product::getLatestN(unsigned int n) {
     std::vector<model::Product> products(model::ConnectionHandler::executeQuery<model::Product>(query.str()));
     return products;
 }
+
+std::vector<model::Product> model::Product::search(std::string search) {
+    std::ostringstream query;
+    query << "SELECT * FROM products WHERE ("
+          << "title LIKE '%" << search << "%' OR "
+          << "detail LIKE '%" << search << "%') "
+          << "ORDER BY id DESC";
+
+    std::vector<model::Product> products(model::ConnectionHandler::executeQuery<model::Product>(query.str()));
+    return products;
+}

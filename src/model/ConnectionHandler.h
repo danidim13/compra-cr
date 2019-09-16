@@ -57,7 +57,12 @@ public:
             conn->setSchema(DB_INST);
 
             stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+
+
+            log_info(NULL, (char*) std::string("Ejecutando query: ").append(query).c_str());
+
             res = std::unique_ptr<sql::ResultSet>(stmt->executeQuery(query));
+
             while(res->next()) {
                 T entity;
                 if (useSel) {
@@ -67,6 +72,10 @@ public:
                 }
                 entities.push_back(entity);
             }
+
+            std::ostringstream msg;
+            msg << "Se obtuvieron " << entities.size() << " tuplas";
+            log_info(NULL, (char*) msg.str().c_str());
 
             return entities;
         } catch (sql::SQLException e) {

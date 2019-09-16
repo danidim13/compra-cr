@@ -9,7 +9,7 @@
 view::ProductCard::ProductCard(const std::string &title, const std::string &detail, const std::string &price) : title(
         title), detail(detail), price(price) {}
 
-view::ProductCard::ProductCard(): title("Ejemplo"), detail("Detalle"), price("$ 0,99") {}
+view::ProductCard::ProductCard(): title(""), detail(""), price("") {}
 
 std::string view::ProductCard::to_string() const {
     std::ostringstream card;

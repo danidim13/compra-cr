@@ -66,10 +66,10 @@ void http::Controller::product_list() {
 
     auto it = req.m_queryMap.find("search");
 
-    if (it != req.m_queryMap.end()) {
+    if (it != req.m_queryMap.end() && !it->second.empty()) {
         // Hubo una búsqueda
         title = "Resultado de búsqueda";
-        itemList = model::Product::getLatestN(4);
+        itemList = model::Product::search(it->second);
         for (auto item: itemList) {
             cards.push_back(view::ProductCard(item.title(), item.detail(), item.unit_price()));
         }

@@ -26,7 +26,7 @@ std::string view::ProductListBuilder::build_content() {
                         </div>
                     </div>)";
 
-    int rows = cards.size() / CARDS_PER_ROW;
+    int rows = (cards.size() / CARDS_PER_ROW) + (cards.size() % CARDS_PER_ROW != 0);
     auto it = cards.begin();
 
     for (int i = 0; i < rows; ++i) {
