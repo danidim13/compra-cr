@@ -50,6 +50,8 @@ std::string view::PageBuilder::build_header() {
                 <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="/">Inicio</a>
                     <a class="nav-item nav-link" href="/user/add">Registrarse</a>
+                    <a class="nav-item nav-link" href="/user/login">Login</a>
+                    <a class="nav-item nav-link" href="/user/logout">Logout</a>
                     <a class="nav-item nav-link" href="/product/add">Vender</a>
                     <a class="nav-item nav-link" href="#">Carrito de compras</a>
                 </div>

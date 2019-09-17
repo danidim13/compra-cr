@@ -22,11 +22,14 @@ http::Router::Router() {
     http::gpRequestUri = getenv("REQUEST_URI"); // dirección completa p.ej. /ProyectoSeguridad/article/view?id=1
     http::gpScriptName = getenv("SCRIPT_NAME"); // dirección desde htdocs del ejecutable (se puede usar para construir links)
     http::gpPathInfo = getenv("PATH_INFO"); // dirección relativa (desde script)
+    http::gpHttpCookie = getenv("HTTP_COOKIE"); // dirección relativa (desde script)
 
     char sbuf[1024];
     sprintf(sbuf, "Request received\nRequest method: %s\nQuery string: %s\nContent length: %s\n"
-                  "Content type: %s\nRequest URI: %s\nScript name: %s\nPath info: %s\nargc: %d\n",
-                  gpMethod, gpQueryString, gpContentLength, gpContentType, gpRequestUri, gpScriptName, gpPathInfo, giArgc);
+                  "Content type: %s\nRequest URI: %s\nScript name: %s\nPath info: %s\nCookie: %s\n"
+                  "\nargc: %d\n",
+                  gpMethod, gpQueryString, gpContentLength, gpContentType, gpRequestUri, gpScriptName, gpPathInfo, gpHttpCookie,
+                  giArgc);
     log_debug(NULL, sbuf);
 }
 
@@ -70,6 +73,12 @@ void http::Router::parse_request() {
 
     m_request.m_RequestUri = std::string(gpRequestUri);
     m_request.m_ScriptName = std::string(gpScriptName);
+
+    if (gpHttpCookie) {
+        m_request.m_HttpCookie = std::string(gpHttpCookie);
+    } else {
+        m_request.m_HttpCookie = "";
+    }
 
     m_request.m_PathInfo = std::string(gpPathInfo);
     auto alias_it = m_aliases.find(m_request.m_PathInfo);

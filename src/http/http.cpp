@@ -13,6 +13,7 @@ char *http::gpContentType = nullptr;
 char *http::gpRequestUri = nullptr;
 char *http::gpScriptName = nullptr;
 char *http::gpPathInfo = nullptr;
+char *http::gpHttpCookie = nullptr;
 int http::giArgc;
 char **http::gsArgv;
 

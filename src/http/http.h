@@ -15,6 +15,7 @@ namespace http {
     extern char *gpRequestUri;
     extern char *gpScriptName;
     extern char *gpPathInfo;
+    extern char *gpHttpCookie;
     extern int   giArgc;
     extern char **gsArgv;
 

@@ -15,6 +15,17 @@
 #include "model/User.h"
 #include "model/Product.h"
 #include "util/decode.h"
+#include <ctime>
+#include "util/cookie.h"
+
+void test_time() {
+    time_t now;
+    time(&now);
+    std::cout << "Now:    " << format_cookie_time(now) << std::endl;
+    std::cout << "Renew:  " << renewed_time() << std::endl;
+    std::cout << "Expire: " << expired_time() << std::endl;
+
+}
 
 void test_sql() {
     sql::mysql::MySQL_Driver *driver;
@@ -126,7 +137,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    test_decode();
+    test_time();
+//    test_decode();
 //    test_latest_products();
 //    test_sql();
 //    test_dom();

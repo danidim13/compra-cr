@@ -22,6 +22,7 @@ public:
     void user_add_post();
     void user_login_get();
     void user_login_post();
+    void user_logout_get();
     void product_list();
     void product_add_get();
     void product_add_post();

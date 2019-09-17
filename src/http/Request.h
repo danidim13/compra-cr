@@ -22,6 +22,7 @@ namespace http{
         std::string m_RequestUri;
         std::string m_ScriptName;
         std::string m_PathInfo;
+        std::string m_HttpCookie;
 
         std::string m_Action;
     };

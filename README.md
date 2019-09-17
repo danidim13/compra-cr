@@ -38,8 +38,8 @@ Agregar configuración del sitio en /etc/apache2/sites-available
 Funcionalidad             | Rutas                                    | Done
 --------------------------|------------------------------------------|--------
 Registro (1.1)            | /user/add:GET, /user/add:POST            |  [x]
-Logout (2.5)              | /user/logout:GET                         |  [ ]
-Login (2.1)               | /user/login:GET, /user/login:POST        |  [ ]
+Logout (2.5)              | /user/logout:GET                         |  [X]
+Login (2.1)               | /user/login:GET, /user/login:POST        |  [X]
 Consultar Productos (1.2) | /product/list:GET                        |  [x]
 Home page                 | /:GET -> /product/list:GET caso especial |  [x]
 Agregar artículo (2.2)    | /product/add:GET, /product/add:POST      |  [x]

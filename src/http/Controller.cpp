@@ -16,6 +16,7 @@
 #include "../util/decode.h"
 #include "../view/product/ProductAddBuilder.h"
 #include "../view/user/UserLoginBuilder.h"
+#include "../util/cookie.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -41,6 +42,9 @@ void http::Controller::processAction() {
         }
         else if (req.m_Action.compare("/user/login") == 0) {
             user_login_get();
+        }
+        else if (req.m_Action.compare("/user/logout") == 0) {
+            user_logout_get();
         }
         else {
             // TODO: return 404 not found
@@ -208,7 +212,7 @@ void http::Controller::user_login_post() {
 //            log_info(NULL, (char*) msg.str().c_str());
 
             std::cout << "Status: 302 Found\n"
-                      << "Set-Cookie: user_id=" << res.second <<"\n"
+                      << "Set-Cookie: user_id=" << res.second <<"; Path=/;" << "Expires=" << renewed_time() << "\n"
                       << "Location: /?login=success\n\n";
 
 
@@ -226,4 +230,10 @@ void http::Controller::user_login_post() {
                   << "Location: /user/login?error=Por+favor+indique+su+usuario\n\n";
 
     }
+}
+
+void http::Controller::user_logout_get() {
+    std::cout << "Status: 302 Found\n"
+              << "Set-Cookie: user_id=none;" <<"; Path=/;" << "Expires=" << expired_time() << "\n"
+              << "Location: /?logout=success\n\n";
 }
