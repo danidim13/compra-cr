@@ -48,25 +48,33 @@ void http::Router::parse_request() {
         m_request.m_Method = std::string(gpMethod);
         log_debug(NULL, (char*)"POST request");
 
-        if (atoll(gpContentLength) > 0){
-            sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
-            char buffer[m_request.m_ContentLength+1];
-            std::cin.read(buffer, m_request.m_ContentLength);
-            buffer[m_request.m_ContentLength] = '\0';
-            m_request.m_Content = std::string(buffer);
+        if (gpContentLength) {
+            if (atoll(gpContentLength) > 0) {
+                sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
+                char buffer[m_request.m_ContentLength + 1];
+                std::cin.read(buffer, m_request.m_ContentLength);
+                buffer[m_request.m_ContentLength] = '\0';
+                m_request.m_Content = std::string(buffer);
 
-            // Hacer algo con CONTENT_TYPE?
-            m_request.m_ContentType = std::string(gpContentType);
+                // Hacer algo con CONTENT_TYPE?
+                m_request.m_ContentType = std::string(gpContentType);
 
+            } else if (atoll(gpContentLength) == 0) {
+                m_request.m_ContentLength = 0;
+                m_request.m_Content = "";
+            } else {
+                log_error(NULL, (char *) "Unexpected CONTENT_LENGTH value");
+                exit(1);
+            }
         } else {
-            log_error(NULL, (char*)"Unexpected CONTENT_LENGTH value");
-            return;
+            log_error(NULL, (char *) "No CONTENT_LENGTH value");
+            exit(1);
         }
     } else {
         std::string error_msg("Unrecognized m_request method: ");
         error_msg.append(gpMethod);
         log_error(NULL, (char*)error_msg.c_str());
-        return;
+        exit(1);
     }
 
 //    this->parse_query_string();

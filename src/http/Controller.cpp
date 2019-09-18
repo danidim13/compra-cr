@@ -395,16 +395,29 @@ void http::Controller::cart_checkout_post() {
 
     Request req = router->get_request();
     Response *resp = router->get_response();
-
     std::vector<model::Product> products;
 
     unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
     std::string items(req.m_CookieMap["shopping_cart"]);
-    if (user_id > 0 && !items.empty()) {
 
-        log_debug(NULL, (char*)std::string("Products: ").append(items).c_str());
-        products = model::Product::getItemsFromCart(items);
+    log_debug(NULL, (char*) "Procesando venta");
+    log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
+    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req.m_CookieMap["shopping_cart"]).c_str()));
 
+
+    if (user_id > 0) {
+        if (!items.empty()) {
+
+            products = model::Product::getItemsFromCart(items);
+
+            resp->header["Status"] = "303 See Other";
+            resp->header["Location"] = std::string("/cart/checkout");
+        } else {
+            resp->header["Status"] = "303 See Other";
+            resp->header["Location"] = std::string("/cart/checkout");
+        }
+    } else {
+        resp->header["Status"] = "303 See Other";
+        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
     }
-    resp->header["Status"] = "404 Not Found";
 }
