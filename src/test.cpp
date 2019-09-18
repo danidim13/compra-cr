@@ -18,6 +18,13 @@
 #include <ctime>
 #include "util/cookie.h"
 
+void test_cart() {
+    auto itemMap = split_cart_str("11,4,5,7,11,1");
+    for (auto item: itemMap) {
+        std::cout << "ID: " << item.first <<", cantidad: " << item.second << std::endl;
+    }
+}
+
 void test_time() {
     time_t now;
     time(&now);
@@ -137,7 +144,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    test_time();
+    test_cart();
+//    test_time();
 //    test_decode();
 //    test_latest_products();
 //    test_sql();

@@ -5,6 +5,7 @@
 #include "Product.h"
 #include <sstream>
 #include "ConnectionHandler.h"
+#include "../util/cookie.h"
 
 model::Product::Product()
 {
@@ -70,4 +71,32 @@ std::vector<model::Product> model::Product::search(std::string search) {
 
     std::vector<model::Product> products(model::ConnectionHandler::executeQuery<model::Product>(query.str()));
     return products;
+}
+
+std::vector<model::Product> model::Product::getItemsFromCart(std::string cart) {
+    std::ostringstream query;
+    std::map<unsigned int, int> itemMap = split_cart_str(cart.c_str());
+//    std::vector<model::Product> entities;
+
+    query << "SELECT * FROM products WHERE id IN (";
+    for (auto it = itemMap.begin(); it != itemMap.end();) {
+        query << it->first;
+        if (++it != itemMap.end()) {
+            query << ", ";
+        }
+    }
+    query << ")";
+
+    log_debug(NULL, (char*) std::string("Query: ").append(query.str()).c_str());
+
+    std::vector<model::Product> entities(model::ConnectionHandler::executeQuery<model::Product>(query.str()));
+    for (auto it = entities.begin(); it != entities.end(); ++it) {
+        it->m_cols.emplace("amount", EntityAttr(itemMap[it->id()]));
+    }
+    return entities;
+}
+
+// TODO: encapsular mejor?
+int model::Product::amount() {
+    return m_cols["amount"].attrValue.i;
 }

@@ -7,6 +7,7 @@
 #include "../util/decode.h"
 #include "http.h"
 #include "Request.h"
+#include "../util/cookie.h"
 #include <string>
 #include <vector>
 #include <cstring>
@@ -76,6 +77,7 @@ void http::Router::parse_request() {
 
     if (gpHttpCookie) {
         m_request.m_HttpCookie = std::string(gpHttpCookie);
+        m_request.m_CookieMap = split_cookie(gpHttpCookie);
     } else {
         m_request.m_HttpCookie = "";
     }
@@ -142,4 +144,8 @@ unsigned long http::Router::parse_query_string() {
 
 http::Request &http::Router::get_request() {
     return m_request;
+}
+
+http::Response * http::Router::get_response() {
+    return &m_response;
 }

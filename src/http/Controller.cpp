@@ -17,6 +17,8 @@
 #include "../view/product/ProductAddBuilder.h"
 #include "../view/user/UserLoginBuilder.h"
 #include "../util/cookie.h"
+#include "../view/Table.h"
+#include "../view/cart/CheckoutBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -46,6 +48,12 @@ void http::Controller::processAction() {
         else if (req.m_Action.compare("/user/logout") == 0) {
             user_logout_get();
         }
+        else if (req.m_Action.compare("/cart/add") == 0) {
+            cart_add_get();
+        }
+        else if (req.m_Action.compare("/cart/checkout") == 0) {
+            cart_checkout_get();
+        }
         else {
             // TODO: return 404 not found
 
@@ -56,21 +64,27 @@ void http::Controller::processAction() {
         if (req.m_Action.compare("/user/add") == 0) {
             user_add_post();
         }
-        if (req.m_Action.compare("/user/login") == 0) {
+        else if (req.m_Action.compare("/user/login") == 0) {
             user_login_post();
         }
         else if (req.m_Action.compare("/product/add") == 0) {
             product_add_post();
         }
+        else if (req.m_Action.compare("/cart/checkout") == 0) {
+            cart_checkout_post();
+        }
 
     } else {
         // wtf
     }
+
+    std::cout << *(get_router()->get_response()) << std::endl;
 }
 
 void http::Controller::product_list() {
 
     Request req = router->get_request();
+    Response *resp = router->get_response();
     std::vector<model::Product> itemList;
     std::list<view::ProductCard> cards;
     std::string title;
@@ -82,30 +96,36 @@ void http::Controller::product_list() {
         title = "Resultado de búsqueda";
         itemList = model::Product::search(it->second);
         for (auto item: itemList) {
-            cards.push_back(view::ProductCard(item.title(), item.detail(), item.unit_price()));
+            cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
         }
     } else {
         // No hay búsqueda, listar los 6 más recientes
         title = "Lo último";
         itemList = model::Product::getLatestN(6);
         for (auto item: itemList) {
-            cards.push_back(view::ProductCard(item.title(), item.detail(), item.unit_price()));
+            cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
         }
     }
 
     view::ProductListBuilder pageBuilder(title, cards);
-    std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
+    resp->header["Content-type"] = "text/html; charset=utf-8";
+    resp->content = pageBuilder.build_document();
+//    std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
 }
 
 void http::Controller::product_add_get() {
+    Response *resp = router->get_response();
 
     view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
-    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+    resp->header["Content-type"] = "text/html; charset=utf-8";
+    resp->content = pageBuilder.build_document();
+//    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
 void http::Controller::product_add_post() {
 
     Request req = router->get_request();
+    Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /product/add");
@@ -114,6 +134,10 @@ void http::Controller::product_add_post() {
     log_debug(NULL, (char*)req.m_Content.c_str());
 
     std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+    std::vector<std::string> select;
+    for (auto const& pair: data)
+        select.push_back(pair.first);
+
 //    for (auto datum: data) {
 //        std::cout << datum.first << ": " << datum.second << std::endl;
 //    }
@@ -121,29 +145,37 @@ void http::Controller::product_add_post() {
     model::Product product;
     product.set_from_map(data);
 
-    if (product.insert_autoId()) {
+    if (product.insert_autoId(select)) {
 //        std::cout << "Exito" << std::endl;
 
         std::ostringstream msg;
         msg << "Created new product with title'" << product.title() << "'";
         log_info(NULL, (char*) msg.str().c_str());
 
-        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+        resp->header["Status"] = "302 Found";
+        resp->header["Location"] = "/";
+//        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
     } else {
-        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+        resp->header["Content-type"] = "text/html; charset=utf-8";
+        resp->content = "Error";
+//        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
     }
 
 }
 
 void http::Controller::user_add_get() {
+    Response *resp = router->get_response();
 
     view::UserAddBuilder pageBuilder("Registrarse");
-    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+    resp->header["Content-type"] = "text/html; charset=utf-8";
+    resp->content = pageBuilder.build_document();
+//    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
 void http::Controller::user_add_post() {
 
     Request req = router->get_request();
+    Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /user/add");
@@ -166,9 +198,15 @@ void http::Controller::user_add_post() {
         msg << "Created new user with username '" << user.username() << "'";
         log_info(NULL, (char*) msg.str().c_str());
 
-        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+//        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+        resp->header["Status"] = "302 Found";
+        resp->header["Location"] = "/";
+//        std::cout << *resp;
+
     } else {
-        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+        resp->header["Content-type"] = "text/html; charset=utf-8";
+        resp->content = "Error";
+//        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
     }
 
 }
@@ -176,6 +214,7 @@ void http::Controller::user_add_post() {
 void http::Controller::user_login_get() {
 
     Request req = router->get_request();
+    Response *resp = router->get_response();
     std::string errors("");
 
     auto it = req.m_queryMap.find("error");
@@ -184,13 +223,16 @@ void http::Controller::user_login_get() {
     }
 
     view::UserLoginBuilder pageBuilder("Acceder al sistema", errors);
-    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+    resp->header["Content-type"] = "text/html; charset=utf-8";
+    resp->content = pageBuilder.build_document();
+//    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 
 }
 
 void http::Controller::user_login_post() {
 
     Request req = router->get_request();
+    Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /user/login");
@@ -200,7 +242,7 @@ void http::Controller::user_login_post() {
 
     std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
 
-    std::ostringstream msg;
+    std::ostringstream cookie, msg;
 
     auto it = data.find("username");
     if (it != data.end()) {
@@ -211,29 +253,158 @@ void http::Controller::user_login_post() {
 //            msg << "Created new user with username '" << user.username() << "'";
 //            log_info(NULL, (char*) msg.str().c_str());
 
+            cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
+
+            resp->header["Status"] = "302 Found";
+            resp->header["Set-Cookie"] = cookie.str();
+            resp->header["Location"] = "/?login=success";
+
+            /*
             std::cout << "Status: 302 Found\n"
                       << "Set-Cookie: user_id=" << res.second <<"; Path=/;" << "Expires=" << renewed_time() << "\n"
                       << "Location: /?login=success\n\n";
-
-
+                      */
         } else {
 
             msg << "Error de login: " << res.second;
             log_debug(NULL, (char*) msg.str().c_str());
-            std::cout << "Status: 303 See Other\n"
-                      << "Location: /user/login?error=" << res.second << "\n\n";
+            resp->header["Status"] = "303 See Other";
+            resp->header["Location"] = std::string("/user/login?error=").append(res.second);
+//            std::cout << "Status: 303 See Other\n"
+//                      << "Location: /user/login?error=" << res.second << "\n\n";
 
         }
     } else {
         // Error de formulario
-        std::cout << "Status: 303 See Other\n"
-                  << "Location: /user/login?error=Por+favor+indique+su+usuario\n\n";
+        resp->header["Status"] = "303 See Other";
+        resp->header["Location"] = std::string("/user/login?error=Por+favor+indique+su+usuario");
+//        std::cout << "Status: 303 See Other\n"
+//                  << "Location: /user/login?error=Por+favor+indique+su+usuario\n\n";
 
     }
 }
 
 void http::Controller::user_logout_get() {
-    std::cout << "Status: 302 Found\n"
-              << "Set-Cookie: user_id=none;" <<"; Path=/;" << "Expires=" << expired_time() << "\n"
-              << "Location: /?logout=success\n\n";
+
+    Response *resp = router->get_response();
+    std::ostringstream cookie;
+
+    cookie << "user_id=none;" <<"; Path=/;" << "Expires=" << expired_time();
+
+    resp->header["Status"] = "302 Found";
+    resp->header["Set-Cookie"] = cookie.str();
+    resp->header["Location"] = "/?logout=success";
+
+//    std::cout << "Status: 302 Found\n"
+//              << "Set-Cookie: user_id=none;" <<"; Path=/;" << "Expires=" << expired_time() << "\n"
+//              << "Location: /?logout=success\n\n";
+}
+
+void http::Controller::cart_add_get() {
+    Request req = router->get_request();
+    Response *resp = router->get_response();
+
+    auto it = req.m_queryMap.find("id");
+
+//    std::string cookie(req.m_HttpCookie);
+    std::string items(req.m_CookieMap["shopping_cart"]);
+    std::ostringstream new_cookie;
+
+
+    if (it != req.m_queryMap.end()) {
+        if (!items.empty()) {
+            items.append(",");
+        }
+        items.append(it->second);
+    }
+    new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time();
+
+    resp->header["Status"] = "302 Found";
+    resp->header["Set-Cookie"] = new_cookie.str();
+    resp->header["Location"] = "/";
+
+//    std::cout << "Status: 302 Found\n"
+//              << "Set-Cookie: shopping_cart=" << item << "; Path=/;" << "Expires=" << renewed_time() << "\n"
+//              << "Location: /\n\n";
+
+}
+
+void http::Controller::cart_checkout_get() {
+
+    Request req = router->get_request();
+    Response *resp = router->get_response();
+    std::vector<model::Product> products;
+
+    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    std::string items(req.m_CookieMap["shopping_cart"]);
+
+    log_debug(NULL, (char*) "Procesando carrito de compras");
+    log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
+    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req.m_CookieMap["shopping_cart"]).c_str()));
+
+
+    if (user_id > 0) {
+        if (!items.empty()) {
+
+            //        log_debug(NULL, (char*)std::string("Products: ").append(items).c_str());
+            products = model::Product::getItemsFromCart(items);
+            double taxes = 0;
+            double subtotal = 0;
+
+            view::Table table({"Producto", "Cantidad", "Precio p/unidad"});
+            for (auto product: products) {
+                table.content.push_back(product.vector({"title", "amount", "unit_price"}));
+                double price = std::stod(product.unit_price());
+                double tax_rate = std::stod(product.iva());
+                // TODO: encapsular mejor el amount?
+                subtotal += price*product.amount();
+                taxes += price*tax_rate;
+            }
+
+            char price_buffer[256];
+            char price_format[] = "%.2f";
+
+            sprintf(price_buffer, price_format, subtotal);
+            std::string ssubtotal(price_buffer);
+
+            sprintf(price_buffer, price_format, taxes);
+            std::string staxes(price_buffer);
+
+            sprintf(price_buffer, price_format, taxes+subtotal);
+            std::string total(price_buffer);
+
+            view::CheckoutBuilder pageBuilder("Su orden", ssubtotal, staxes, total, table);
+
+            resp->header["Content-type"] = "text/html; charset=utf-8";
+            resp->content = pageBuilder.build_document();
+        } else {
+            view::Table table({"Producto", "Cantidad", "Precio p/unidad"});
+            table.content.push_back({"Aún no tiene nada en su carrito", "", ""});
+            view::CheckoutBuilder pageBuilder("Su orden", "0", "0", "0", table);
+
+            resp->header["Content-type"] = "text/html; charset=utf-8";
+            resp->content = pageBuilder.build_document();
+        }
+    } else {
+        resp->header["Status"] = "303 See Other";
+        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
+    }
+}
+
+void http::Controller::cart_checkout_post() {
+
+    Request req = router->get_request();
+    Response *resp = router->get_response();
+
+    std::vector<model::Product> products;
+
+    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    std::string items(req.m_CookieMap["shopping_cart"]);
+    if (user_id > 0 && !items.empty()) {
+
+        log_debug(NULL, (char*)std::string("Products: ").append(items).c_str());
+        products = model::Product::getItemsFromCart(items);
+
+    }
+    resp->header["Status"] = "404 Not Found";
 }

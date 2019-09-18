@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include "Request.h"
+#include "Response.h"
 
 namespace http {
     class Router {
@@ -15,6 +16,7 @@ namespace http {
         Router();
         void parse_request();
         Request &get_request();
+        Response * get_response();
 
     protected:
 
@@ -25,6 +27,7 @@ namespace http {
         unsigned long parse_query_string();
 
         http::Request m_request;
+        http::Response m_response;
 
         std::map<std::string, std::string> m_aliases;
         std::set<std::string> m_getActions;

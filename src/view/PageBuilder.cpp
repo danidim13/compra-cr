@@ -53,7 +53,7 @@ std::string view::PageBuilder::build_header() {
                     <a class="nav-item nav-link" href="/user/login">Login</a>
                     <a class="nav-item nav-link" href="/user/logout">Logout</a>
                     <a class="nav-item nav-link" href="/product/add">Vender</a>
-                    <a class="nav-item nav-link" href="#">Carrito de compras</a>
+                    <a class="nav-item nav-link" href="/cart/checkout">Carrito de compras</a>
                 </div>
             </div>
         </nav>
@@ -130,8 +130,10 @@ std::string view::PageBuilder::build_content() {
                         <!-- Inicio del card deck-->
                         <div class="card-deck mx-3 my-3">
 )";
-    content << ProductCard("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
-    content << ProductCard("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00 ");
+    content << ProductCard(0, "Computadora Dell",
+                           "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    content << ProductCard(0, "Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones",
+                           "₡ 58.000,00 ");
     content << ProductCard();
     content << R"(
                         </div>
@@ -148,8 +150,10 @@ std::string view::PageBuilder::build_content() {
                         <!-- Inicio del card deck-->
                         <div class="card-deck mx-3 my-3">
 )";
-    content << ProductCard("Computadora Dell", "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
-    content << ProductCard("Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones", "₡ 58.000,00 ");
+    content << ProductCard(0, "Computadora Dell",
+                           "Procesador Intel i3, 4 GB de RAM y 126 GB de disco duro.", "₡ 250.000,00");
+    content << ProductCard(0, "Motodguadaña Husqvarna", "Usada por 3 meses, en excelentes condiciones",
+                           "₡ 58.000,00 ");
     content << ProductCard();
     content << R"(
                         </div>

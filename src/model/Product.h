@@ -22,9 +22,11 @@ public:
     std::string service_rate(); // decimal(5,4) not null default 0.15;
     std::string unit_price(); // decimal(12,2) not null;
     unsigned int stock(); // int unsigned not null
+    int amount(); // int unsigned not null
 
     static std::vector<Product> getLatestN(unsigned int n);
     static std::vector<Product> search(std::string keyword);
+    static std::vector<Product> getItemsFromCart(std::string);
 };
 }
 

@@ -60,7 +60,7 @@ bool model::Entity::set_from_row(sql::ResultSet *res)
     }
 }
 
-bool model::Entity::set_from_row(sql::ResultSet *res, const std::list<std::string> &select)
+bool model::Entity::set_from_row(sql::ResultSet *res, const std::vector<std::string> &select)
 {
     try {
         for (auto attrName: select) {
@@ -124,6 +124,50 @@ bool model::Entity::set_from_map(const std::map<std::string, std::string> &map) 
     return false;
 }
 
+bool model::Entity::insert_autoId(const std::vector<std::string> &select) {
+    assert(!table.empty());
+
+    std::ostringstream query;
+    std::ostringstream columns;
+    std::ostringstream values;
+
+    columns << "(";
+    values << "(";
+    size_t len = select.size();
+
+    for (auto col: select) {
+        --len;
+        if (col.compare("id") == 0) {
+            continue;
+        }
+        columns << col;
+        switch (m_cols[col].attrType) {
+            case model::INT: {
+                values << m_cols[col].attrValue.i;
+                break;
+            }
+            case model::UINT: {
+                values << m_cols[col].attrValue.u;
+                break;
+            }
+            case model::STRING: {
+                values << "'" << m_cols[col].attrStr << "'";
+                break;
+            }
+            default:
+                break;
+        }
+        if (len > 0) {
+            columns << ", ";
+            values << ", ";
+        }
+    }
+    columns << ")" ;
+    values << ")";
+    query << "INSERT INTO " << table << " " << columns.str() << " VALUES " << values.str();
+
+    return model::ConnectionHandler::execute(query.str());
+}
 bool model::Entity::insert_autoId() {
 
     assert(!table.empty());
@@ -169,6 +213,29 @@ bool model::Entity::insert_autoId() {
 
     return model::ConnectionHandler::execute(query.str());
 }
+
+std::vector<std::string> model::Entity::vector(const std::vector<std::string> &select) const {
+    std::vector<std::string> entity;
+    for (auto attrName: select) {
+        auto it = m_cols.find(attrName);
+        switch (it->second.attrType) {
+            case INT: {
+                entity.push_back(std::to_string(it->second.attrValue.i));
+                break;
+            }
+            case UINT: {
+                entity.push_back(std::to_string(it->second.attrValue.u));
+                break;
+            }
+            case STRING: {
+                entity.push_back(it->second.attrStr);
+                break;
+            }
+        }
+    }
+    return entity;
+}
+
 
 /*
 

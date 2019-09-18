@@ -6,10 +6,11 @@
 #include <sstream>
 #include "ProductCard.h"
 
-view::ProductCard::ProductCard(const std::string &title, const std::string &detail, const std::string &price) : title(
+view::ProductCard::ProductCard(const unsigned int &id, const std::string &title, const std::string &detail,
+                               const std::string &price) : id(id), title(
         title), detail(detail), price(price) {}
 
-view::ProductCard::ProductCard(): title(""), detail(""), price("") {}
+view::ProductCard::ProductCard(): id(0), title(""), detail(""), price("") {}
 
 std::string view::ProductCard::to_string() const {
     std::ostringstream card;
@@ -31,6 +32,11 @@ std::string view::ProductCard::to_string() const {
     card << "₡ " << price << std::endl;
     card << R"(
                 </p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="/cart/add?id=)" << id << R"(" class="btn btn-primary">
+                    Agregar al carrito
+                </a>
             </div>
         </div>
     )";

@@ -44,6 +44,6 @@ Consultar Productos (1.2) | /product/list:GET                        |  [x]
 Home page                 | /:GET -> /product/list:GET caso especial |  [x]
 Agregar artículo (2.2)    | /product/add:GET, /product/add:POST      |  [x]
 Finalizar compra (2.4)    | /checkout:GET, /checkout:POST            |  [ ]
-Agregar al carrito (2.3)  | cookie? desde product/list               |  [ ]
+Agregar al carrito (2.3)  | /cart/add (agregar cookie)               |  [X]
 Comentarios (1.3)         | /comments:GET, comments:POST             |  [ ]
 

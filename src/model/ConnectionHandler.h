@@ -38,7 +38,8 @@ class ConnectionHandler {
 public:
 
     template <class T>
-    static std::vector<T> executeQuery(const std::string &query, const std::list<std::string> &select, const bool &useSel = true) {
+    static std::vector<T> executeQuery(const std::string &query, const std::vector<std::string> &select,
+                                       const bool &useSel = true) {
         static_assert(std::is_base_of<Entity, T>::value, "T is not derived from Entity");
 
         sql::mysql::MySQL_Driver *driver;
@@ -111,6 +112,9 @@ public:
             conn->setSchema(DB_INST);
 
             stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+
+            log_info(NULL, (char*) std::string("Ejecutando query: ").append(query).c_str());
+
             stmt->execute(query);
 
             return true;

@@ -16,12 +16,13 @@ class ProductCard {
 public:
 
     ProductCard();
-    ProductCard(const std::string &title, const std::string &detail, const std::string &price);
+    ProductCard(const unsigned int &id, const std::string &title, const std::string &detail, const std::string &price);
 
     std::string to_string() const;
 
     friend std::ostream &operator<<(std::ostream &os, const ProductCard &card);
 
+    unsigned int id;
     std::string title;
     std::string detail;
     std::string price;

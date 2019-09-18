@@ -7,6 +7,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <cppconn/resultset.h>
 #include "mysql_driver.h"
 
@@ -35,6 +36,7 @@ namespace model{
         AttrType attrType;
         AttrValue attrValue;
         std::string attrStr;
+//        bool empty;
     };
 
     class Entity {
@@ -42,12 +44,11 @@ namespace model{
         Entity() {};
         virtual ~Entity() {};
         virtual bool set_from_row(sql::ResultSet *res);
-        virtual bool set_from_row(sql::ResultSet *res, const std::list<std::string> &select);
+        virtual bool set_from_row(sql::ResultSet *res, const std::vector<std::string> &select);
         virtual bool set_from_map(const std::map<std::string, std::string> &map);
         virtual bool insert_autoId();
-//        virtual bool set_from_row(sql::ResultSet *res, std::vector<std::string> select);
-//        virtual bool set_from_row(sql::ResultSet *res, std::set<std::string> select);
-
+        virtual bool insert_autoId(const std::vector<std::string> &select);
+        virtual std::vector<std::string> vector(const std::vector<std::string> &select) const;
 
     protected:
         std::map<std::string, EntityAttr> m_cols;
