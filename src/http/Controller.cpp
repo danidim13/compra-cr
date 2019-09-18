@@ -117,12 +117,21 @@ void http::Controller::product_list() {
 }
 
 void http::Controller::product_add_get() {
+
+    Request req = router->get_request();
     Response *resp = router->get_response();
 
     view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
-    resp->header["Content-type"] = "text/html; charset=utf-8";
-    resp->content = pageBuilder.build_document();
-//    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+
+    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    if (user_id > 0 ) {
+        resp->header["Content-type"] = "text/html; charset=utf-8";
+        resp->content = pageBuilder.build_document();
+//        std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+    } else {
+        resp->header["Status"] = "303 See Other";
+        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+agregar+productos");
+    }
 }
 
 void http::Controller::product_add_post() {
@@ -131,37 +140,48 @@ void http::Controller::product_add_post() {
     Response *resp = router->get_response();
 
 
-    log_debug(NULL, (char*)"POST request en /product/add");
-    log_debug(NULL, (char*)req.m_ContentType.c_str());
-    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
-    log_debug(NULL, (char*)req.m_Content.c_str());
+    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    if (user_id > 0 ) {
 
-    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
-    std::vector<std::string> select;
-    for (auto const& pair: data)
-        select.push_back(pair.first);
+        log_debug(NULL, (char *) "POST request en /product/add");
+        log_debug(NULL, (char *) req.m_ContentType.c_str());
+        log_debug(NULL, (char *) std::to_string(req.m_ContentLength).c_str());
+        log_debug(NULL, (char *) req.m_Content.c_str());
+
+        std::map<std::string, std::string> data = split_query((char *) req.m_Content.c_str());
+        std::vector<std::string> select;
+
+        data["owner_id"] = std::to_string(user_id);
+
+        for (auto const &pair: data)
+            select.push_back(pair.first);
 
 //    for (auto datum: data) {
 //        std::cout << datum.first << ": " << datum.second << std::endl;
 //    }
 
-    model::Product product;
-    product.set_from_map(data);
+        model::Product product;
+        product.set_from_map(data);
 
-    if (product.insert_autoId(select)) {
+        if (product.insert_autoId(select)) {
 //        std::cout << "Exito" << std::endl;
 
-        std::ostringstream msg;
-        msg << "Created new product with title'" << product.title() << "'";
-        log_info(NULL, (char*) msg.str().c_str());
+            std::ostringstream msg;
+            msg << "Created new product with title'" << product.title() << "'";
+            log_info(NULL, (char *) msg.str().c_str());
 
-        resp->header["Status"] = "302 Found";
-        resp->header["Location"] = "/";
+            resp->header["Status"] = "302 Found";
+            resp->header["Location"] = "/";
 //        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
-    } else {
-        resp->header["Content-type"] = "text/html; charset=utf-8";
-        resp->content = "Error";
+        } else {
+            resp->header["Content-type"] = "text/html; charset=utf-8";
+            resp->content = "Error";
 //        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+        }
+    } else {
+
+        resp->header["Status"] = "303 See Other";
+        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+agregar+productos");
     }
 
 }
@@ -438,7 +458,7 @@ void http::Controller::cart_checkout_post() {
             // COMMIT
 
             std::ostringstream new_cookie;
-            new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 10);
+            new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 1);
 
             resp->header["Status"] = "302 Found";
             resp->header["Location"] = std::string("/cart/checkout");
@@ -462,5 +482,5 @@ void http::Controller::cart_clear_get() {
 
     resp->header["Status"] = "302 Found";
     resp->header["Set-Cookie"] = cookie.str();
-    resp->header["Location"] = "/";
+    resp->header["Location"] = "/cart/checkout";
 }
