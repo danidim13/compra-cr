@@ -18,6 +18,7 @@ std::string format_cookie_time(const time_t &timer);
 std::string format_cookie_time(struct tm *gmt);
 std::string expired_time();
 std::string renewed_time();
+std::string renewed_time(int min, int sec);
 std::map<std::string, std::string> split_cookie(const char *src);
 std::map<unsigned int, int> split_cart_str(const char *cart);
 std::map<unsigned int, int> get_cart_items(const char *cookie);

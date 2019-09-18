@@ -54,6 +54,9 @@ void http::Controller::processAction() {
         else if (req.m_Action.compare("/cart/checkout") == 0) {
             cart_checkout_get();
         }
+        else if (req.m_Action.compare("/cart/clear") == 0) {
+            cart_clear_get();
+        }
         else {
             // TODO: return 404 not found
 
@@ -410,8 +413,36 @@ void http::Controller::cart_checkout_post() {
 
             products = model::Product::getItemsFromCart(items);
 
-            resp->header["Status"] = "303 See Other";
+            // TODO: Terminar la lógica de la compra
+            // Begin TRAN
+
+
+            bool available = true;
+            for (auto product: products) {
+//                table.content.push_back(product.vector({"title", "amount", "unit_price"}));
+                if (product.amount() > product.stock()) {
+                    available = false;
+                    break;
+                }
+            }
+
+            if (available) {
+                // INSERT INTO SALE
+
+                for (auto product: products) {
+                    // ADD TO SALE sale_id, product_id, QUANTITY
+                }
+
+            }
+
+            // COMMIT
+
+            std::ostringstream new_cookie;
+            new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 10);
+
+            resp->header["Status"] = "302 Found";
             resp->header["Location"] = std::string("/cart/checkout");
+            resp->header["Set-Cookie"] = new_cookie.str(); // Expirar el cookie poco después
         } else {
             resp->header["Status"] = "303 See Other";
             resp->header["Location"] = std::string("/cart/checkout");
@@ -420,4 +451,16 @@ void http::Controller::cart_checkout_post() {
         resp->header["Status"] = "303 See Other";
         resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
     }
+}
+
+void http::Controller::cart_clear_get() {
+
+    Response *resp = router->get_response();
+    std::ostringstream cookie;
+
+    cookie << "shopping_cart=none;" <<"; Path=/;" << "Expires=" << expired_time();
+
+    resp->header["Status"] = "302 Found";
+    resp->header["Set-Cookie"] = cookie.str();
+    resp->header["Location"] = "/";
 }

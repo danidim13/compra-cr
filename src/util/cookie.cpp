@@ -22,15 +22,20 @@ std::string format_cookie_time(struct tm *gmt) {
     return std::string(time_buf);
 }
 
-std::string renewed_time() {
+std::string renewed_time(int min, int sec) {
     time_t now;
     struct tm *pLocal;
 
     time(&now);
     pLocal = localtime(&now);
-    pLocal->tm_min += SESSION_MIN;
+    pLocal->tm_min += min;
+    pLocal->tm_sec += sec;
 
     return format_cookie_time(mktime(pLocal));
+}
+
+std::string renewed_time() {
+    return renewed_time(SESSION_MIN, 0);
 }
 
 
@@ -110,3 +115,4 @@ std::map<unsigned int, int> get_cart_items(const char *cookie) {
     auto cookieMap = split_cookie(cookie);
     return split_cart_str(cookieMap["shopping_cart"].c_str());
 }
+

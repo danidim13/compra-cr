@@ -29,6 +29,7 @@ public:
     void cart_add_get();
     void cart_checkout_get();
     void cart_checkout_post();
+    void cart_clear_get();
 
 private:
     Router *router;
