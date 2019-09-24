@@ -35,7 +35,7 @@ void http::Controller::processAction() {
         if (req.m_Action.compare("/product/list") == 0
                 || req.m_Action.compare("/product/index") == 0
                 || req.m_Action.compare("/") == 0 )
-            product_list();
+            product_list_get();
         else if (req.m_Action.compare("/user/add") ==  0) {
             user_add_get();
         }
@@ -84,7 +84,7 @@ void http::Controller::processAction() {
     std::cout << *(get_router()->get_response()) << std::endl;
 }
 
-void http::Controller::product_list() {
+void http::Controller::product_list_get() {
 
     Request req = router->get_request();
     Response *resp = router->get_response();

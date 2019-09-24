@@ -51,18 +51,18 @@ create table purchases_products
     );
     
 -- Tags para clasificar productos y búsqueda por categorias
-create table tags
-    (
-    label_es varchar(50) not null primary key
-    );
-    
--- Tags por producto
-create table products_tags
-    (
-    product_id int unsigned not null,
-    tag_label varchar(50) not null,
-    primary key(product_id, tag_label)
-    );
+# create table tags
+#     (
+#     label_es varchar(50) not null primary key
+#     );
+#
+# -- Tags por producto
+# create table products_tags
+#     (
+#     product_id int unsigned not null,
+#     tag_label varchar(50) not null,
+#     primary key(product_id, tag_label)
+#     );
     
     
 -- Foreign Key constraints
@@ -79,9 +79,9 @@ alter table purchases_products
     add foreign key (product_id) references products(id),
     add foreign key (seller_id) references users(id);
     
-alter table products_tags
-    add foreign key (product_id) references products(id),
-    add foreign key (tag_label) references tags(label_es);
+# alter table products_tags
+#     add foreign key (product_id) references products(id),
+#     add foreign key (tag_label) references tags(label_es);
     
     
 -- Limpiar base de datos    

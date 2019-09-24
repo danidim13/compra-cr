@@ -4,17 +4,70 @@ Aplicación de compra y venta de bienes
 
 ## Instalación y Configuración 
 
-TODO
+### Compilación
 
-libmysqlclient mysqlclient-dev
-libmysqlcppconn libmysqlcppconn-dev
+Instalar herramientas de compilación
+
+```
+apt-get install build-essentials cmake
+```
+
+Instalar los siguientes paquetes:
+
+
+```
+apt-get install libmysqlclient mysqlclient-dev
+apt-get install libmysqlcppconn libmysqlcppconn-dev
+```
+
+Desde la carpeta raíz del proyecto correr los siguientes comandos
+
+```
+cmake .
+make && sudo make install
+```
+
+El programa se instalará en la ruta `/var/www/compra.cr`, luego se deben crear los directorios de logs y
+abrir los permisos
+
+```
+sudo mkdir /var/www/compra.cr/logs
+sudo chmod 777 /var/www/compra.cr/logs
+```
+
+### Configuración de Apache
 
 Habilitar mod_rewrite y mod_cgi
 
+```apacheconfig
 sudo a2enmod rewrite cgi
 sudo systemctl restart apache2 
+```
 
-Agregar configuración del sitio en /etc/apache2/sites-available
+Agregar configuración del sitio en `/etc/apache2/sites-available`
+
+```apacheconfig
+sudo cp compra.cr.conf /etc/apache2/sites-available/
+```
+
+
+Habilitar el sitio del archivo recién copiado y deshabilitar el default.
+
+```apacheconfig
+sudo a2dissite 000-default.conf
+sudo a2ensite compra.cr.conf
+```
+
+### Configuración de la base de datos
+
+Se requiere contar con una instalación de MariaDB. Luego se deben correr los scripts de creación que se encuentran en el
+directorio `bd`, en el siguiente orden
+
+```
+schema_and_user.sql
+table_definition.sql
+```
+
 
 ## Features
 
@@ -37,13 +90,13 @@ Agregar configuración del sitio en /etc/apache2/sites-available
 
 Funcionalidad             | Rutas                                    | Done
 --------------------------|------------------------------------------|--------
-Registro (1.1)            | /user/add:GET, /user/add:POST            |  [x]
+Registro (1.1)            | /user/add:GET, /user/add:POST            |  [X]
 Logout (2.5)              | /user/logout:GET                         |  [X]
 Login (2.1)               | /user/login:GET, /user/login:POST        |  [X]
-Consultar Productos (1.2) | /product/list:GET                        |  [x]
-Home page                 | /:GET -> /product/list:GET caso especial |  [x]
-Agregar artículo (2.2)    | /product/add:GET, /product/add:POST      |  [x]
-Finalizar compra (2.4)    | /checkout:GET, /checkout:POST            |  [ ]
+Consultar Productos (1.2) | /product/list:GET                        |  [X]
+Home page                 | /:GET -> /product/list:GET caso especial |  [X]
+Agregar artículo (2.2)    | /product/add:GET, /product/add:POST      |  [X]
+Finalizar compra (2.4)    | /checkout:GET, /checkout:POST            |  [X]
 Agregar al carrito (2.3)  | /cart/add (agregar cookie)               |  [X]
 Comentarios (1.3)         | /comments:GET, comments:POST             |  [ ]
 
