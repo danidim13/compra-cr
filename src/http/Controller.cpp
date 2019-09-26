@@ -6,6 +6,7 @@
 #include "Controller.h"
 #include "../model/model.h"
 #include "../model/Product.h"
+#include "../model/Purchase.h"
 #include "../model/User.h"
 #include "http.h"
 #include "../view/PageBuilder.h"
@@ -433,10 +434,6 @@ void http::Controller::cart_checkout_post() {
 
             products = model::Product::getItemsFromCart(items);
 
-            // TODO: Terminar la lógica de la compra
-            // Begin TRAN
-
-
             bool available = true;
             for (auto product: products) {
 //                table.content.push_back(product.vector({"title", "amount", "unit_price"}));
@@ -447,15 +444,12 @@ void http::Controller::cart_checkout_post() {
             }
 
             if (available) {
-                // INSERT INTO SALE
+                auto transaction_res = model::Purchase::processPurchase(products, user_id);
 
-                for (auto product: products) {
-                    // ADD TO SALE sale_id, product_id, QUANTITY
-                }
+            } else {
+                // Más items en el carrito de los disponibles
 
             }
-
-            // COMMIT
 
             std::ostringstream new_cookie;
             new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 1);
@@ -464,10 +458,12 @@ void http::Controller::cart_checkout_post() {
             resp->header["Location"] = std::string("/cart/checkout");
             resp->header["Set-Cookie"] = new_cookie.str(); // Expirar el cookie poco después
         } else {
+            // Carrito vacío
             resp->header["Status"] = "303 See Other";
             resp->header["Location"] = std::string("/cart/checkout");
         }
     } else {
+        // Usuario no loggeado
         resp->header["Status"] = "303 See Other";
         resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
     }

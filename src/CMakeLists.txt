@@ -1,22 +1,30 @@
 
 set(core_SRCS
+        util/cookie.cpp util/cookie.h
+        util/decode.h util/decode.cpp
         util/log.cpp util/log.h
         http/http.cpp http/http.h
         http/Router.cpp http/Router.h
         http/Request.cpp http/Request.h
         http/Controller.cpp http/Controller.h
-        view/PageBuilder.cpp view/PageBuilder.h
-        view/DomItem.cpp view/DomItem.h
-        view/NavItem.cpp view/NavItem.h
+        http/Response.cpp http/Response.h
         model/model.cpp model/model.h
         model/ConnectionHandler.h
         model/User.cpp model/User.h
         model/Product.cpp model/Product.h
+        model/Purchase.cpp model/Purchase.h
         view/ProductCard.cpp view/ProductCard.h
         view/product/ProductListBuilder.cpp view/product/ProductListBuilder.h
         view/user/UserAddBuilder.cpp view/user/UserAddBuilder.h
         view/Form.cpp view/Form.h
-        view/FormInput.cpp view/FormInput.h util/decode.h util/decode.cpp view/product/ProductAddBuilder.cpp view/product/ProductAddBuilder.h view/user/UserLoginBuilder.cpp view/user/UserLoginBuilder.h util/cookie.cpp util/cookie.h http/Response.cpp http/Response.h view/Table.cpp view/Table.h view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h)
+        view/FormInput.cpp view/FormInput.h
+        view/PageBuilder.cpp view/PageBuilder.h
+        view/DomItem.cpp view/DomItem.h
+        view/NavItem.cpp view/NavItem.h
+        view/product/ProductAddBuilder.cpp view/product/ProductAddBuilder.h
+        view/user/UserLoginBuilder.cpp view/user/UserLoginBuilder.h
+        view/Table.cpp view/Table.h
+        view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h)
 
 
 add_library(core ${core_SRCS})
@@ -53,3 +61,5 @@ target_link_libraries(app_ecommerce.cgi -static-libstdc++ -static-libgcc core )
 
 add_executable(manual_test test.cpp)
 target_link_libraries(manual_test core)
+
+install(TARGETS app_ecommerce.cgi DESTINATION ${HTDOCS})

@@ -133,6 +133,94 @@ public:
 
     }
 
+    static sql::Connection* tranBegin() {
+        sql::mysql::MySQL_Driver *driver;
+        sql::Connection* conn;
+        std::unique_ptr<sql::Statement> stmt;
+        std::string query("START TRANSACTION");
+
+        try {
+            driver = sql::mysql::get_mysql_driver_instance();
+
+            conn = driver->connect(DB_HOST, DB_USER, DB_PASS);
+            conn->setSchema(DB_INST);
+
+            stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+
+            log_info(NULL, (char*) "Iniciando transacción");
+
+            stmt->execute(query);
+
+            return conn;
+        } catch (sql::SQLException e) {
+            std::ostringstream error_msg;
+            error_msg << "SQL Error (" << e.getErrorCode() << ") " << e.what()
+                      << " while executing '" << query
+                      << "' on function " << __FUNCTION__ << ", file " __FILE__
+                      << ", line " << __LINE__  << std::endl;
+
+            std::cerr << error_msg.str();
+            log_error(NULL, (char*)(error_msg.str().c_str()));
+
+            return nullptr;
+        }
+    }
+
+    static sql::Connection* tranExecute(sql::Connection* conn, std::string query) {
+        std::unique_ptr<sql::Statement> stmt;
+
+        try {
+            stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+            log_info(NULL, (char*) std::string("Ejecutando query: ").append(query).c_str());
+            stmt->execute(query);
+
+            return conn;
+        } catch (sql::SQLException e) {
+            std::ostringstream error_msg;
+            error_msg << "SQL Error (" << e.getErrorCode() << ") " << e.what()
+                      << " while executing '" << query
+                      << "' on function " << __FUNCTION__ << ", file " __FILE__
+                      << ", line " << __LINE__  << std::endl;
+
+            std::cerr << error_msg.str();
+            log_error(NULL, (char*)(error_msg.str().c_str()));
+
+            return nullptr;
+        }
+    }
+
+    static sql::ResultSet* tranExecuteQuery(sql::Connection* conn, std::string query) {
+        std::unique_ptr<sql::Statement> stmt;
+
+        try {
+            stmt = std::unique_ptr<sql::Statement>(conn->createStatement());
+            log_info(NULL, (char*) std::string("Ejecutando query: ").append(query).c_str());
+            return stmt->executeQuery(query);
+
+        } catch (sql::SQLException e) {
+            std::ostringstream error_msg;
+            error_msg << "SQL Error (" << e.getErrorCode() << ") " << e.what()
+                      << " while executing '" << query
+                      << "' on function " << __FUNCTION__ << ", file " __FILE__
+                      << ", line " << __LINE__  << std::endl;
+
+            std::cerr << error_msg.str();
+            log_error(NULL, (char*)(error_msg.str().c_str()));
+
+            return nullptr;
+        }
+    }
+
+
+    static sql::Connection* tranCommit(sql::Connection* conn) {
+        tranExecute(conn, "COMMIT");
+    }
+
+    static sql::Connection* tranRollback(sql::Connection* conn) {
+        tranExecute(conn, "ROLLBACK");
+    }
+
+
 };
 
 }
