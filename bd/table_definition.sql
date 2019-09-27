@@ -34,6 +34,7 @@ create table purchases
     cost_tax decimal(12,2) not null,
     cost_raw decimal(12,2) not null,
     cost_total decimal(12,2) not null,
+    receipt_code char(14) null,
     payment_state enum('retenido','confirmado','reclamo pendiente','devolución') not null default 'retenido'
     );
 

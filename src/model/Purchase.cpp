@@ -4,10 +4,24 @@
 
 #include "Purchase.h"
 #include "ConnectionHandler.h"
+#include "CardPayment.h"
 
-std::pair<bool, std::string> model::Purchase::processPurchase(std::vector<model::Product> products, unsigned int buyer) {
+model::Purchase::Purchase()
+{
+    table = "purchases";
+    m_cols = {
+            {"id", EntityAttr(0u)},
+            {"buyer_id", EntityAttr(0u)},
+            {"order_date", EntityAttr("")},
+            {"cost_tax", EntityAttr("")},
+            {"cost_raw", EntityAttr("")},
+            {"cost_total", EntityAttr("")},
+            {"payment_state", EntityAttr("")},
+            {"receipt_code", EntityAttr("")},
+    };
+}
 
-    std::pair<bool, std::string> result;
+std::pair<bool, std::string> model::Purchase::processPurchase(std::vector<model::Product> products, unsigned int buyer, std::map<std::string, std::string> card_data) {
 
     std::unique_ptr<sql::Connection> conn(ConnectionHandler::tranBegin());
 
@@ -47,18 +61,53 @@ std::pair<bool, std::string> model::Purchase::processPurchase(std::vector<model:
         }
     }
 
-    bool transactionSuccess = true;
-
+    std::pair<bool, std::string> paymentResult = model::CardPayment::process(purchase.cost_total(), card_data);
     // TODO: Simular compra con tarjeta
 
-    if (transactionSuccess) {
+    if (paymentResult.first) {
+
+        std::ostringstream update;
+        update << "UPDATE purchases SET receipt_code = \"" << paymentResult.second << "\" WHERE id = " << purchase.id();
+        ConnectionHandler::tranExecute(conn.get(), update.str());
+
         ConnectionHandler::tranCommit(conn.get());
-        result.first = true;
+
+        std::ostringstream log_msg;
+        log_msg << "Pago exitoso para compra con id=" << purchase.id() << " realizada por usuario con id="  << buyer;
+        log_msg << " por concepto de ₡ " << purchase.cost_total() << " y número de factura " << paymentResult.second;
+        log_info(NULL, (char*)log_msg.str().c_str());
+
     } else {
         ConnectionHandler::tranRollback(conn.get());
-        result.first = false;
-        result.second = "Pago denegado";
     }
 
-    return result;
+    return paymentResult;
+}
+
+unsigned int model::Purchase::id() {
+    return m_cols["id"].attrValue.u;
+}
+
+unsigned int model::Purchase::buyer_id() {
+    return m_cols["buyer_id"].attrValue.u;
+}
+
+std::string model::Purchase::order_date() {
+    return m_cols["order_date"].attrStr;
+}
+
+std::string model::Purchase::cost_tax() {
+    return m_cols["cost_tax"].attrStr;
+}
+
+std::string model::Purchase::cost_raw() {
+    return m_cols["cost_raw"].attrStr;
+}
+
+std::string model::Purchase::cost_total() {
+    return m_cols["cost_total"].attrStr;
+}
+
+std::string model::Purchase::payment_state() {
+    return m_cols["payment_state"].attrStr;
 }

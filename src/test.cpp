@@ -17,6 +17,17 @@
 #include "util/decode.h"
 #include <ctime>
 #include "util/cookie.h"
+#include "model/CardPayment.h"
+
+void payment_test() {
+    auto result = model::CardPayment::process("5000.00", {
+        {"card_holder", "DANIEL DIAZ"},
+        {"card_number", "4042-2000-6969"},
+//        {"card_number", "40"},
+        {"ccv", "555"},
+        {"expiration_date", "5/55"}});
+    std::cout << result.first << " " << result.second << std::endl;
+}
 
 void test_cart() {
     auto itemMap = split_cart_str("11,4,5,7,11,1");
@@ -144,7 +155,8 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    test_cart();
+    payment_test();
+//    test_cart();
 //    test_time();
 //    test_decode();
 //    test_latest_products();

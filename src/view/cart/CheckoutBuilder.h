@@ -14,7 +14,7 @@ namespace view {
 class CheckoutBuilder: public PageBuilder {
 public:
     CheckoutBuilder(const std::string &title, const std::string &subtotal, const std::string &taxes,
-                    const std::string &total, const Table &cartTable);
+                    const std::string &total, const Table &cartTable, const std::string &error);
 
 private:
     std::string build_body() override;
@@ -22,6 +22,7 @@ private:
 public:
 
     std::string title;
+    std::string error;
     std::string subtotal;
     std::string taxes;
     std::string total;

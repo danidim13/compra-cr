@@ -26,7 +26,7 @@ std::string view::Form::to_string() const {
         form << input;
     }
     form << R"(
-                <button type="submit" class="btn btn-primary col-2">Submit</button>
+                <button type="submit" class="btn btn-primary col-2">)" << submit_label << R"(</button>
             </form>
         </div>
     </div>)" << std::endl;

@@ -50,6 +50,8 @@ void http::Router::parse_request() {
 
         if (gpContentLength) {
             if (atoll(gpContentLength) > 0) {
+                log_debug(NULL, "Leyendo datos del post");
+
                 sscanf(gpContentLength, "%zu", &m_request.m_ContentLength);
                 char buffer[m_request.m_ContentLength + 1];
                 std::cin.read(buffer, m_request.m_ContentLength);
@@ -58,6 +60,9 @@ void http::Router::parse_request() {
 
                 // Hacer algo con CONTENT_TYPE?
                 m_request.m_ContentType = std::string(gpContentType);
+
+                log_debug(NULL, (char*)std::string("Content-type: ").append(m_request.m_ContentType).c_str());
+                log_debug(NULL, (char*)std::string("Content: ").append(m_request.m_Content).c_str());
 
             } else if (atoll(gpContentLength) == 0) {
                 m_request.m_ContentLength = 0;
