@@ -25,6 +25,7 @@ public:
     std::string name;
     std::string placeholder;
 };
+std::ostream &operator<<(std::ostream &os, const FormInput &input);
 
 }
 

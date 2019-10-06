@@ -27,6 +27,7 @@ public:
     std::string detail;
     std::string price;
 };
+std::ostream &operator<<(std::ostream &os, const ProductCard &card);
 
 }
 

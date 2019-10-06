@@ -24,6 +24,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Table &table);
 };
+std::ostream &operator<<(std::ostream &os, const Table &table);
 
 }
 

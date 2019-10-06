@@ -18,6 +18,7 @@ public:
     std::string content;
 
 };
+std::ostream &operator<<(std::ostream &os, const Response &response);
 
 }
 

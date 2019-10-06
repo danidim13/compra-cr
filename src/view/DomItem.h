@@ -48,6 +48,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const DomItem &item);
 };
+std::ostream &operator<<(std::ostream &os, const DomItem &item);
 
 }
 
