@@ -29,13 +29,18 @@ set(core_SRCS
 
 add_library(core ${core_SRCS})
 
-find_path(MYSQLCPP_INCLUDE_DIR mysql_connection.h)
-#find_library(MYSQLCPP_LIBRARY libmysqlcppconn.so)
-find_library(MYSQLCPP_LIBRARY NAMES  libmysqlclient.a libmysqlcppconn-static.a)
+find_path(MYSQLCPP_INCLUDE_DIR mysql_connection.h )
+
+find_library(MYSQLCPP_LIBRARY libmysqlcppconn.so)
+#find_library(MYSQLCPP_LIBRARY NAMES  libmysqlclient.a libmysqlcppconn-static.a)
+
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
 
 if(NOT MYSQLCPP_INCLUDE_DIR)
     message(${MYSQLCPP_INCLUDE_DIR})
-    message(FATAL_ERROR "mysql_connections.h not found, try installing with apt-get install libmysqlcppconn-dev")
+    message(FATAL_ERROR "mysql_connection.h not found, try installing with apt-get install libmysqlcppconn-dev")
 elseif(NOT MYSQLCPP_LIBRARY)
     message(${MYSQLCPP_LIBRARY})
     message(FATAL_ERROR "libmysqlcppconn.so not found, try installing with apt-get install libmysqlcppconn-dev")
@@ -44,7 +49,7 @@ else()
 endif()
 
 target_include_directories(core PRIVATE ${MYSQLCPP_INCLUDE_DIR})
-target_link_libraries(core PRIVATE ${MYSQLCPP_LIBRARY})
+target_link_libraries(core PUBLIC Threads::Threads PRIVATE ${MYSQLCPP_LIBRARY})
 
 # include(FindPkgConfig)
 # pkg_check_modules(LIBMYSQLCLIENT REQUIRED mysqlclient)
