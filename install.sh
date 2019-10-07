@@ -63,6 +63,7 @@ systemctl start mariadb
 mysql -u root -h "localhost" < bd/schema_and_user.sql
 mysql -u root -h "localhost" < bd/table_definition.sql
 mysql -u root -h "localhost" < bd/purchase_sp.sql
+mysql -u root -h "localhost" < bd/data.sql
 
 ## Firewall
 echo "Configurando firewall"
