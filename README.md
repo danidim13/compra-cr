@@ -4,7 +4,12 @@ Aplicación de compra y venta de bienes
 
 ## Instalación y Configuración 
 
-### Compilación
+### Servidor de producción CentOS
+
+Se incluye el script de instalación `install.sh` para el servidor de producción.
+El mismo incluye toda la instalación de paquetes, configuración de SELinux, Apache y MariaDB.
+
+### Instalación manual en Ubuntu
 
 Instalar herramientas de compilación
 
@@ -32,7 +37,7 @@ abrir los permisos
 
 ```
 sudo mkdir /var/www/compra.cr/logs
-sudo chmod 777 /var/www/compra.cr/logs
+sudo chmod 775 /var/www/compra.cr/logs
 ```
 
 ### Configuración de Apache
@@ -66,6 +71,8 @@ directorio `bd`, en el siguiente orden
 ```
 schema_and_user.sql
 table_definition.sql
+purchase_sp.sql
+data.sql
 ```
 
 
