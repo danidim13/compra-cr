@@ -5,8 +5,13 @@
 #include "Validator.h"
 #include <regex>
 
-bool validate::validate_regex(const std::string src, const std::string regex) {
 
-    return std::regex_match(src, std::regex(regex));
+bool validate::Validator::regex(const std::string &src, const std::regex &regex) {
 
+    return std::regex_match(src, regex);
+
+}
+
+bool validate::Validator::length_bewteen(const std::string &src, const int &min, const int &max) {
+    return src.length() <= max && src.length() >= min;
 }

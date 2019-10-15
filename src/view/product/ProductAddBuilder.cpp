@@ -34,7 +34,7 @@ std::string view::ProductAddBuilder::build_body() {
             {"Título", "title", "p. ej. Olla de presión Renaware"},
             {"Detalle", "detail", "Descripción detallada"},
             {"Precio", "unit_price", "Precio en colones"},
-            {"Cantidad", "stock", "Cnatidad de artículos que posee"}
+            {"Cantidad", "stock", "Cantidad de artículos que posee"}
     }) << std::endl;
 
     body << R"(
