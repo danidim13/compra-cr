@@ -24,7 +24,8 @@ set(core_SRCS
         view/product/ProductAddBuilder.cpp view/product/ProductAddBuilder.h
         view/user/UserLoginBuilder.cpp view/user/UserLoginBuilder.h
         view/Table.cpp view/Table.h
-        view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h model/CardPayment.cpp model/CardPayment.h)
+        view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h model/CardPayment.cpp model/CardPayment.h
+        validate/Validator.cpp validate/Validator.h)
 
 
 add_library(core ${core_SRCS})

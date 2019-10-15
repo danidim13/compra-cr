@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 11)
 #set(HTDOCS /opt/lampp/htdocs/ProyectoSeguridad)
 set(HTDOCS /var/www/compra.cr)
 
+
 add_subdirectory(src)
+add_subdirectory(test)
 # add_subdirectory(Google_tests EXCLUDE_FROM_ALL)
 
 
