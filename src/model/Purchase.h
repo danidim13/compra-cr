@@ -24,6 +24,8 @@ public:
 
     static std::pair<bool, std::string>
     processPurchase(std::vector<Product> products, unsigned int buyer, std::map<std::string, std::string> card_data);
+
+    static validate::MapValidator CardValidator();
 };
 }
 

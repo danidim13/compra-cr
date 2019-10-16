@@ -5,6 +5,7 @@
 #include "Purchase.h"
 #include "ConnectionHandler.h"
 #include "CardPayment.h"
+#include "../validate/StringValidator.h"
 
 model::Purchase::Purchase()
 {
@@ -19,6 +20,7 @@ model::Purchase::Purchase()
             {"payment_state", EntityAttr("")},
             {"receipt_code", EntityAttr("")},
     };
+
 }
 
 std::pair<bool, std::string> model::Purchase::processPurchase(std::vector<model::Product> products, unsigned int buyer, std::map<std::string, std::string> card_data) {
@@ -110,4 +112,13 @@ std::string model::Purchase::cost_total() {
 
 std::string model::Purchase::payment_state() {
     return m_cols["payment_state"].attrStr;
+}
+
+validate::MapValidator model::Purchase::CardValidator() {
+    return validate::MapValidator({
+        {"card_holder", std::make_shared<validate::StringValidator>(validate::REGEX_CARD_HOLDER, 1, 50)},
+        {"card_number", std::make_shared<validate::StringValidator>(validate::REGEX_CREDIT_CARD, 19, 19)},
+        {"ccv", std::make_shared<validate::StringValidator>(validate::REGEX_CCV, 3, 5)},
+        {"expiration_date", std::make_shared<validate::StringValidator>(validate::REGEX_EXPIRE, 5, 5)},
+    });
 }

@@ -20,6 +20,7 @@
 #include "../util/cookie.h"
 #include "../view/Table.h"
 #include "../view/cart/CheckoutBuilder.h"
+#include "../validate/StringValidator.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -97,18 +98,24 @@ void http::Controller::product_list_get() {
 
     if (it != req.m_queryMap.end() && !it->second.empty()) {
         // Hubo una búsqueda
-        title = "Resultado de búsqueda";
-        itemList = model::Product::search(it->second);
-        for (auto item: itemList) {
-            cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
+        validate::StringValidator validator(validate::REGEX_SPANISH_SENTENCE, 1, 30);
+        if (validator.validate(it->second).first) {
+            // Búsqueda válida
+            title = "Resultado de búsqueda";
+            itemList = model::Product::search(it->second);
+        } else {
+            // Búsqueda inválida
+            title = "Lo último";
+            itemList = model::Product::getLatestN(6);
         }
     } else {
         // No hay búsqueda, listar los 6 más recientes
         title = "Lo último";
         itemList = model::Product::getLatestN(6);
-        for (auto item: itemList) {
-            cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
-        }
+    }
+
+    for (auto item: itemList) {
+        cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
     }
 
     view::ProductListBuilder pageBuilder(title, cards);
@@ -278,46 +285,40 @@ void http::Controller::user_login_post() {
     log_debug(NULL, (char*)req.m_Content.c_str());
 
     std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+    validate::StringValidator validator(validate::REGEX_USERNAME, 1, 50);
 
     std::ostringstream cookie, msg;
 
     auto it = data.find("username");
     if (it != data.end()) {
-        auto res = model::User::login(it->second);
-        if (res.first) {
-            // Login exitoso
+        auto vResult = validator.validate(it->second);
 
-//            msg << "Created new user with username '" << user.username() << "'";
-//            log_info(NULL, (char*) msg.str().c_str());
+        if (vResult.first) {
+            auto res = model::User::login(it->second);
+            if (res.first) {
+                // Login exitoso
 
-            cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
+                cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
 
-            resp->header["Status"] = "302 Found";
-            resp->header["Set-Cookie"] = cookie.str();
-            resp->header["Location"] = "/?login=success";
+                resp->header["Status"] = "302 Found";
+                resp->header["Set-Cookie"] = cookie.str();
+                resp->header["Location"] = "/?login=success";
 
-            /*
-            std::cout << "Status: 302 Found\n"
-                      << "Set-Cookie: user_id=" << res.second <<"; Path=/;" << "Expires=" << renewed_time() << "\n"
-                      << "Location: /?login=success\n\n";
-                      */
+            } else {
+                msg << "Error de login: " << res.second;
+                log_debug(NULL, (char *) msg.str().c_str());
+                resp->header["Status"] = "303 See Other";
+                resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
+            }
         } else {
-
-            msg << "Error de login: " << res.second;
-            log_debug(NULL, (char*) msg.str().c_str());
+            // Error de formulario
             resp->header["Status"] = "303 See Other";
-            resp->header["Location"] = std::string("/user/login?error=").append(res.second);
-//            std::cout << "Status: 303 See Other\n"
-//                      << "Location: /user/login?error=" << res.second << "\n\n";
-
+            resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
         }
     } else {
         // Error de formulario
         resp->header["Status"] = "303 See Other";
         resp->header["Location"] = std::string("/user/login?error=Por+favor+indique+su+usuario");
-//        std::cout << "Status: 303 See Other\n"
-//                  << "Location: /user/login?error=Por+favor+indique+su+usuario\n\n";
-
     }
 }
 
@@ -342,13 +343,13 @@ void http::Controller::cart_add_get() {
     Response *resp = router->get_response();
 
     auto it = req.m_queryMap.find("id");
+    validate::StringValidator validator(validate::REGEX_NUMBER, 1, 10);
 
-//    std::string cookie(req.m_HttpCookie);
+    // TODO: validar cookie
     std::string items(req.m_CookieMap["shopping_cart"]);
     std::ostringstream new_cookie;
 
-
-    if (it != req.m_queryMap.end()) {
+    if (it != req.m_queryMap.end() && validator.validate(it->second).first) {
         if (!items.empty()) {
             items.append(",");
         }
@@ -372,9 +373,12 @@ void http::Controller::cart_checkout_get() {
     Response *resp = router->get_response();
     std::vector<model::Product> products;
 
+    // Validación/sanitización implícita de user_id en la conversión
     unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
     std::string items(req.m_CookieMap["shopping_cart"]);
     std::string error(req.m_queryMap["error"]);
+
+    validate::StringValidator itemsValidator(std::regex("^([0-9]+,)*[0-9]+$"), 1, 100);
 
     log_debug(NULL, (char*) "Procesando carrito de compras");
     log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
@@ -382,9 +386,8 @@ void http::Controller::cart_checkout_get() {
 
 
     if (user_id > 0) {
-        if (!items.empty()) {
+        if (!items.empty() && itemsValidator.validate(items).first) {
 
-            //        log_debug(NULL, (char*)std::string("Products: ").append(items).c_str());
             products = model::Product::getItemsFromCart(items);
             double taxes = 0;
             double subtotal = 0;
@@ -440,14 +443,18 @@ void http::Controller::cart_checkout_post() {
 
     Request req = router->get_request();
     Response *resp = router->get_response();
-    std::vector<model::Product> products;
 
+    std::vector<model::Product> products;
     std::ostringstream new_cookie;
 
     unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+
     std::string items(req.m_CookieMap["shopping_cart"]);
+    validate::StringValidator itemsValidator(std::regex("^([0-9]+,)*[0-9]+$"), 1, 100);
 
     std::map<std::string, std::string> card_data = split_query((char*)req.m_Content.c_str());
+    auto cardValidator = model::Purchase::CardValidator();
+    auto vResult = cardValidator.validate(card_data);
 
     log_debug(NULL, (char*) "Procesando venta");
     log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
@@ -459,7 +466,7 @@ void http::Controller::cart_checkout_post() {
     }
 
     if (user_id > 0) {
-        if (!items.empty()) {
+        if (!items.empty() && itemsValidator.validate(items).first) {
 
             products = model::Product::getItemsFromCart(items);
 
@@ -473,22 +480,35 @@ void http::Controller::cart_checkout_post() {
             }
 
 
-            if (available) {
+            if (vResult.valid) {
+                if (available) {
 
-                // Realizar el pago
-                auto transaction_res = model::Purchase::processPurchase(products, user_id, card_data);
+                    // Realizar el pago
+                    auto transaction_res = model::Purchase::processPurchase(products, user_id, card_data);
 
-                if (transaction_res.first) {
-                    // Exito
+                    if (transaction_res.first) {
+                        // Exito
 
-                    // Expirar el cookie poco después
-                    new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 1);
-                    resp->header["Set-Cookie"] = new_cookie.str();
+                        // Expirar el cookie poco después
+                        new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 1);
+                        resp->header["Set-Cookie"] = new_cookie.str();
 
-                    resp->header["Status"] = "302 Found";
-                    resp->header["Location"] = std::string("/cart/checkout");
+                        resp->header["Status"] = "302 Found";
+                        resp->header["Location"] = std::string("/cart/checkout");
+                    } else {
+                        // Fail
+
+                        // Renovar el cookie
+                        new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(20, 0);
+                        resp->header["Set-Cookie"] = new_cookie.str();
+
+                        // Redirigir con error
+                        resp->header["Status"] = "303 See Other";
+                        resp->header["Location"] = std::string("/cart/checkout?error=").append(transaction_res.second);
+                    }
+
                 } else {
-                    // Fail
+                    // Más items en el carrito de los disponibles
 
                     // Renovar el cookie
                     new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(20, 0);
@@ -496,21 +516,15 @@ void http::Controller::cart_checkout_post() {
 
                     // Redirigir con error
                     resp->header["Status"] = "303 See Other";
-                    resp->header["Location"] = std::string("/cart/checkout?error=").append(transaction_res.second);
+                    resp->header["Location"] = std::string(
+                            "/cart/checkout?error=Solicit%C3%B3+mas+productos+de+los+que+hay+disponibles");
                 }
 
             } else {
-                // Más items en el carrito de los disponibles
-
-                // Renovar el cookie
-                new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(20, 0);
-                resp->header["Set-Cookie"] = new_cookie.str();
-
-                // Redirigir con error
+                // TODO: formato inválido
                 resp->header["Status"] = "303 See Other";
-                resp->header["Location"] = std::string("/cart/checkout?error=Solicit%C3%B3+mas+productos+de+los+que+hay+disponibles");
+                resp->header["Location"] = std::string("/cart/checkout?error=Error+en+formulario%2C+revise+sus+datos+de+tarjeta");
             }
-
         } else {
             // Carrito vacío
             resp->header["Status"] = "303 See Other";
