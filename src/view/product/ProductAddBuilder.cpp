@@ -10,6 +10,16 @@ view::ProductAddBuilder::ProductAddBuilder(const std::string &title) : title(tit
 
 std::string view::ProductAddBuilder::build_body() {
     std::ostringstream body;
+    view::Form form("POST", "/product/add", {
+        {"Título", "title", "p. ej. Olla de presión Renaware"},
+        {"Detalle", "detail", "Descripción detallada"},
+        {"Precio", "unit_price", "Precio en colones"},
+        {"Cantidad", "stock", "Cantidad de artículos que posee"}
+    });
+
+    if (!errors.empty()) {
+        form.set_errors(errors);
+    }
 
     body << R"(
 <!-- Inicio contenido -->
@@ -30,12 +40,7 @@ std::string view::ProductAddBuilder::build_body() {
                         </div>
                     </div>)";
 
-    body << view::Form("POST", "/product/add", {
-            {"Título", "title", "p. ej. Olla de presión Renaware"},
-            {"Detalle", "detail", "Descripción detallada"},
-            {"Precio", "unit_price", "Precio en colones"},
-            {"Cantidad", "stock", "Cantidad de artículos que posee"}
-    }) << std::endl;
+    body << form << std::endl;
 
     body << R"(
                     <div class="my-5"></div>
@@ -50,4 +55,7 @@ std::string view::ProductAddBuilder::build_body() {
 
     return body.str();
 }
+
+view::ProductAddBuilder::ProductAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors)
+        : title(title), errors(errors) {}
 

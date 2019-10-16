@@ -38,3 +38,13 @@ std::string view::Form::to_string() const {
 std::ostream &view::operator<<(std::ostream &os, const view::Form &form) {
     return os << form.to_string();
 }
+
+void view::Form::set_errors(std::map<std::string, std::string> errors) {
+    for (auto it = inputs.begin(); it != inputs.end(); ++it) {
+        auto error_it = errors.find(it->name);
+        if (error_it != errors.end()) {
+            it->error = error_it->second;
+        }
+    }
+
+}

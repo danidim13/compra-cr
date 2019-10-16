@@ -151,33 +151,37 @@ void http::Controller::product_add_post() {
 
         std::map<std::string, std::string> data = split_query((char *) req.m_Content.c_str());
         std::vector<std::string> select;
+        model::Product product;
 
         data["owner_id"] = std::to_string(user_id);
 
-        for (auto const &pair: data)
-            select.push_back(pair.first);
+        auto validator = product.get_defaultValidator();
+        auto result = validator.validate(data);
+        if (result.valid) {
 
-//    for (auto datum: data) {
-//        std::cout << datum.first << ": " << datum.second << std::endl;
-//    }
+            // Campos que vamos a guardar
+            for (auto const &pair: data)
+                select.push_back(pair.first);
 
-        model::Product product;
-        product.set_from_map(data);
+            product.set_from_map(data);
 
-        if (product.insert_autoId(select)) {
-//        std::cout << "Exito" << std::endl;
+            if (product.insert_autoId(select)) {
 
-            std::ostringstream msg;
-            msg << "Created new product with title'" << product.title() << "'";
-            log_info(NULL, (char *) msg.str().c_str());
+                std::ostringstream msg;
+                msg << "Created new product with title'" << product.title() << "'";
+                log_info(NULL, (char *) msg.str().c_str());
 
-            resp->header["Status"] = "302 Found";
-            resp->header["Location"] = "/";
-//        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+                resp->header["Status"] = "302 Found";
+                resp->header["Location"] = "/";
+            } else {
+                resp->header["Content-type"] = "text/html; charset=utf-8";
+                resp->content = "Error";
+            }
         } else {
+            // Error de validación
+            view::ProductAddBuilder pageBuilder("Agregar producto al catálogo", result.errors);
             resp->header["Content-type"] = "text/html; charset=utf-8";
-            resp->content = "Error";
-//        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+            resp->content = pageBuilder.build_document();
         }
     } else {
 
@@ -208,29 +212,38 @@ void http::Controller::user_add_post() {
     log_debug(NULL, (char*)req.m_Content.c_str());
 
     std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
-//    for (auto datum: data) {
-//        std::cout << datum.first << ": " << datum.second << std::endl;
-//    }
 
     model::User user;
-    user.set_from_map(data);
+    auto validator = user.get_defaultValidator();
+    auto result = validator.validate(data);
+    if (result.valid) {
+        user.set_from_map(data);
 
-    if (user.insert_autoId()) {
-//        std::cout << "Exito" << std::endl;
+        if (user.insert_autoId()) {
+    //        std::cout << "Exito" << std::endl;
 
-        std::ostringstream msg;
-        msg << "Created new user with username '" << user.username() << "'";
-        log_info(NULL, (char*) msg.str().c_str());
+            std::ostringstream msg;
+            msg << "Created new user with username '" << user.username() << "'";
+            log_info(NULL, (char*) msg.str().c_str());
 
-//        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
-        resp->header["Status"] = "302 Found";
-        resp->header["Location"] = "/";
-//        std::cout << *resp;
+    //        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
+            resp->header["Status"] = "302 Found";
+            resp->header["Location"] = "/";
+    //        std::cout << *resp;
 
+        } else {
+            resp->header["Content-type"] = "text/html; charset=utf-8";
+            resp->content = "Error";
+    //        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+        }
     } else {
+        log_debug(NULL, (char *) "Error de validacion");
+        for (auto err : result.errors) {
+            log_debug(NULL, (char*)err.second.c_str());
+        }
+        view::UserAddBuilder pageBuilder("Registrarse", result.errors);
         resp->header["Content-type"] = "text/html; charset=utf-8";
-        resp->content = "Error";
-//        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
+        resp->content = pageBuilder.build_document();
     }
 
 }

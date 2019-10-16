@@ -11,6 +11,18 @@ view::UserAddBuilder::UserAddBuilder(const std::string &title) : title(title) {}
 std::string view::UserAddBuilder::build_body() {
     std::ostringstream body;
 
+    view::Form form("POST", "/user/add", {
+            {"Nombre de usuario", "username", "ejemplo"},
+            {"Nombre", "surname", "Nombre"},
+            {"Apellido(s)", "last_name", "Apellidos"},
+            {"Correo electrónico", "email", "ejemplo@gmail.com"},
+            {"Teléfono", "phone", "8080-2020"}
+    });
+
+    if (!errors.empty()) {
+        form.set_errors(errors);
+    }
+
     body << R"(
 <!-- Inicio contenido -->
         <main>
@@ -30,13 +42,7 @@ std::string view::UserAddBuilder::build_body() {
                         </div>
                     </div>)";
 
-    body << view::Form("POST", "/user/add", {
-            {"Nombre de usuario", "username", "ejemplo"},
-            {"Nombre", "surname", "Nombre"},
-            {"Apellido(s)", "last_name", "Apellidos"},
-            {"Correo electrónico", "email", "ejemplo@gmail.com"},
-            {"Teléfono", "phone", "8080-2020"}
-    }) << std::endl;
+    body << form << std::endl;
 
     body << R"(
                     <div class="my-5"></div>
@@ -51,3 +57,6 @@ std::string view::UserAddBuilder::build_body() {
 
     return body.str();
 }
+
+view::UserAddBuilder::UserAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors)
+        : title(title), errors(errors) {}

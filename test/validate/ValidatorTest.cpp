@@ -127,6 +127,21 @@ namespace {
         EXPECT_FALSE(validate::Validator::regex("56/20", validate::REGEX_EXPIRE));
         EXPECT_FALSE(validate::Validator::regex("blas", validate::REGEX_EXPIRE));
     }
+
+    TEST(ValidateRegexPhone, ValidPhone) {
+        EXPECT_TRUE(validate::Validator::regex("+(506) 8707-8691", validate::REGEX_PHONE));
+        EXPECT_TRUE(validate::Validator::regex("+(1) 8-707-8691", validate::REGEX_PHONE));
+        EXPECT_TRUE(validate::Validator::regex("+506 8707-8691", validate::REGEX_PHONE));
+        EXPECT_TRUE(validate::Validator::regex("8707-8691", validate::REGEX_PHONE));
+        EXPECT_TRUE(validate::Validator::regex("87078691", validate::REGEX_PHONE));
+        EXPECT_TRUE(validate::Validator::regex("+50687078691", validate::REGEX_PHONE));
+    }
+
+    TEST(ValidateRegexPhone, InvalidPhone) {
+        EXPECT_FALSE(validate::Validator::regex("+506 8707-8691-", validate::REGEX_PHONE));
+        EXPECT_FALSE(validate::Validator::regex(" 8707-8691", validate::REGEX_PHONE));
+        EXPECT_FALSE(validate::Validator::regex("-87078691", validate::REGEX_PHONE));
+    }
 }
 
 #pragma clang diagnostic pop

@@ -17,6 +17,9 @@ public:
     FormInput(const std::string &label, const std::string &name);
     FormInput(const std::string &label, const std::string &name, const std::string &placeholder);
 
+    FormInput(const std::string &label, const std::string &name, const std::string &placeholder,
+              const std::string &error);
+
     std::string to_string() const;
 
     friend std::ostream &operator<<(std::ostream &os, const FormInput &input);
@@ -24,6 +27,7 @@ public:
     std::string label;
     std::string name;
     std::string placeholder;
+    std::string error;
 };
 std::ostream &operator<<(std::ostream &os, const FormInput &input);
 

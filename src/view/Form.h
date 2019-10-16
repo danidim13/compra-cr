@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <ostream>
 #include "DomItem.h"
 #include "FormInput.h"
@@ -27,6 +28,7 @@ public:
          const std::vector<FormInput> &inputs);
 
 
+    void set_errors(std::map<std::string, std::string> errors);
     std::string to_string() const;
 
     friend std::ostream &operator<<(std::ostream &os, const Form &form);

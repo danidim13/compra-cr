@@ -23,6 +23,7 @@ namespace validate {
         typedef std::shared_ptr<Validator> ptrValidator_t;
 
 
+        MapValidator() = default;
         MapValidator(const std::map<std::string, ptrValidator_t> &fields);
 
         MapValidatorResult validate(const std::map<std::string, std::string> &raw_data);

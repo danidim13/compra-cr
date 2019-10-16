@@ -5,6 +5,7 @@
 #include <sstream>
 #include "User.h"
 #include "ConnectionHandler.h"
+#include "../validate/StringValidator.h"
 
 model::User::User()
 {
@@ -17,6 +18,19 @@ model::User::User()
         {"last_name", EntityAttr(std::string(""))},
         {"email", EntityAttr(std::string(""))},
         {"phone", EntityAttr(std::string(""))}
+    };
+
+    default_validator.fields = {
+        {"username", std::make_shared<validate::StringValidator>(
+                validate::REGEX_USERNAME, 1, 50 )},
+        {"surname", std::make_shared<validate::StringValidator>(
+                validate::REGEX_SPANISH_NAMES, 1, 50 )},
+        {"last_name", std::make_shared<validate::StringValidator>(
+                validate::REGEX_SPANISH_NAMES, 1, 50 )},
+        {"email", std::make_shared<validate::StringValidator>(
+                validate::REGEX_EMAIL, 1, 50 )},
+        {"phone", std::make_shared<validate::StringValidator>(
+                validate::REGEX_PHONE, 1, 50 )},
     };
 }
 

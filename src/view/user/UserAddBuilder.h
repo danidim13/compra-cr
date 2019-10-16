@@ -18,7 +18,10 @@ public:
 
     std::string build_body() override;
 
+    UserAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors);
+
     std::string title;
+    std::map<std::string, std::string> errors;
 };
 
 }

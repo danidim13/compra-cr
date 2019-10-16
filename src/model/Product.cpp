@@ -6,6 +6,7 @@
 #include <sstream>
 #include "ConnectionHandler.h"
 #include "../util/cookie.h"
+#include "../validate/StringValidator.h"
 
 model::Product::Product()
 {
@@ -19,6 +20,19 @@ model::Product::Product()
         {"service_rate", EntityAttr("")},
         {"unit_price", EntityAttr("")},
         {"stock", EntityAttr(0u)},
+    };
+
+    default_validator.fields = {
+        {"owner_id", std::make_shared<validate::StringValidator>(
+                validate::REGEX_NUMBER, 1, 10 )},
+        {"title", std::make_shared<validate::StringValidator>(
+                validate::REGEX_SPANISH_NAMES, 1, 50 )},
+        {"detail", std::make_shared<validate::StringValidator>(
+                validate::REGEX_SPANISH_SENTENCE, 0, 500 )},
+        {"unit_price", std::make_shared<validate::StringValidator>(
+                validate::REGEX_PHONE, 1, 15 )},
+        {"stock", std::make_shared<validate::StringValidator>(
+                validate::REGEX_NUMBER, 1, 10 )},
     };
 }
 

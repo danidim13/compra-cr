@@ -14,8 +14,10 @@ namespace validate {
     const std::regex REGEX_NUMBER(R"(^[0-9]+$)");
     const std::regex REGEX_DECIMAL(R"(^(\+|-)?[0-9]+(\.[0-9]+)?$)");
     const std::regex REGEX_SPANISH_NAMES(R"(^[a-zA-ZáéíóúüÁÉÍÓÚÜñÑ\s]*$)");
+    const std::regex REGEX_USERNAME(R"(^[a-zA-Z0-9_.]+$)");
     const std::regex REGEX_SPANISH_SENTENCE(R"(^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\.,!?¿¡;:]*$)");
     const std::regex REGEX_EMAIL(R"(^[a-zA-Z0-9_.]{1,64}@[a-zA-Z0-9_.]{1,255}$)");
+    const std::regex REGEX_PHONE(R"(^(\+?([0-9]{1,4}|\([0-9]{1,4}\)) ?)?([0-9]+-)*[0-9]+$)");
 
     const std::regex REGEX_CARD_HOLDER(R"(^([a-zA-Z]+ ?){1,4}$)");
     const std::regex REGEX_CREDIT_CARD(R"(^[0-9]{4}(-[0-9]{4}){3}$)");

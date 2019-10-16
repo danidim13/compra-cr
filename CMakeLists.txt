@@ -8,7 +8,7 @@ set(HTDOCS /var/www/compra.cr)
 
 
 add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(test EXCLUDE_FROM_ALL)
 # add_subdirectory(Google_tests EXCLUDE_FROM_ALL)
 
 

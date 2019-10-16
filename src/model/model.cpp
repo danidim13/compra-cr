@@ -236,6 +236,10 @@ std::vector<std::string> model::Entity::vector(const std::vector<std::string> &s
     return entity;
 }
 
+validate::MapValidator model::Entity::get_defaultValidator() const {
+    return default_validator;
+}
+
 
 /*
 
