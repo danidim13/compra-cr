@@ -18,6 +18,68 @@
 #include <ctime>
 #include "util/cookie.h"
 #include "model/CardPayment.h"
+#include "auth/PasswordHasher.h"
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+
+void passwd_test() {
+    auth::PasswordHasher hasher;
+    auto res = hasher.passwordHash("", "contraseña");
+    std::cout << res << std::endl;
+}
+
+void crypt_test() {
+    EVP_MD_CTX *mdctx;
+    const EVP_MD *digest;
+    char mess1[] = "Test Message\n";
+    char mess2[] = "Hello World\n";
+    unsigned char md_value[EVP_MAX_MD_SIZE];
+    unsigned int md_len, i;
+
+    int is = 64;
+    int enc_max_size = 4*(is + (3 - is%3))/3 + 1;
+
+    unsigned char enc_md_value[enc_max_size];
+    unsigned int enc_md_len;
+
+    digest = EVP_sha256();
+
+    int iter = 1000;
+    int saltlen = 8;
+    int keylen = 32;
+
+    unsigned char salt[saltlen];
+    RAND_bytes(salt, saltlen);
+
+    PKCS5_PBKDF2_HMAC(mess1, strlen(mess1),
+                          salt, saltlen, iter,
+                          digest,
+                          keylen, md_value);
+
+    /*
+    mdctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(mdctx, md, NULL);
+    EVP_DigestUpdate(mdctx, mess1, strlen(mess1));
+    EVP_DigestUpdate(mdctx, mess2, strlen(mess2));
+    EVP_DigestFinal_ex(mdctx, md_value, &md_len);
+    EVP_MD_CTX_free(mdctx);
+
+
+     */
+
+    enc_md_len = EVP_EncodeBlock(enc_md_value, md_value, keylen);
+
+    printf("Digest (%d-bit) is: ", keylen);
+    for (i = 0; i < keylen; i++)
+        printf("%02x", md_value[i]);
+    printf("\n");
+
+    printf("Digest (b64) is: %s\n", enc_md_value);
+
+    exit(0);
+}
 
 void payment_test() {
     auto result = model::CardPayment::process("5000.00", {
@@ -155,7 +217,9 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    payment_test();
+    passwd_test();
+//    crypt_test();
+//    payment_test();
 //    test_cart();
 //    test_time();
 //    test_decode();
