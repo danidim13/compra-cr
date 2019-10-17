@@ -14,6 +14,7 @@ namespace view {
 
 class Table {
 public:
+    Table() = default;
     Table(const std::vector<std::string> &header);
     Table(const std::vector<std::string> &header, const std::vector<std::vector<std::string>> &content);
 

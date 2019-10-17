@@ -11,18 +11,31 @@
 #include "Router.h"
 
 namespace http {
-    
-class CartController : public Controller {
 
-public:
-    void cart_add_get();
+    class CartController : public Controller {
 
-    void cart_checkout_get();
+    public:
+        void cart_add_get();
 
-    void cart_checkout_post();
+        void cart_checkout_get();
 
-    void cart_clear_get();
+        void cart_checkout_post();
+
+        void cart_clear_get();
+
+    private:
+
+        struct SaleData {
+            std::string subtotal;
+            std::string taxes;
+            std::string total;
+            view::Table table;
+        };
+
+        SaleData getSaleData(std::vector<model::Product> products);
+
 };
+
 
 }
 

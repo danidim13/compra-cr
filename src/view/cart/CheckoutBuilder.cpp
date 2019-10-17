@@ -16,6 +16,16 @@ view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::stri
 
 std::string view::CheckoutBuilder::build_body() {
     std::ostringstream body;
+    view::Form form("POST", "/cart/checkout", "Comprar", {
+        {"Nombre del tarjetahabiente", "card_holder", ""},
+        {"Númbero de tarjeta", "card_number", "xxxx-xxxx-xxxx-xxxx"},
+        {"Código de seguridad", "ccv", "xxx"},
+        {"Fecha de vencimiento", "expiration_date", ""}
+    });
+
+    if (!formErrors.empty()) {
+        form.set_errors(formErrors);
+    }
 
     body << R"(
 <!-- Inicio contenido -->
@@ -59,12 +69,7 @@ std::string view::CheckoutBuilder::build_body() {
                     <div class="row">
                         <div class="col-lg-6 py-3">
     )";
-    body << view::Form("POST", "/cart/checkout", "Comprar", {
-            {"Nombre del tarjetahabiente", "card_holder", ""},
-            {"Númbero de tarjeta", "card_number", "xxxx-xxxx-xxxx-xxxx"},
-            {"Código de seguridad", "ccv", "xxx"},
-            {"Fecha de vencimiento", "expiration_date", ""}
-    }) << std::endl;
+    body << form << std::endl;
 
     body << R"(
                         </div>
@@ -107,3 +112,14 @@ std::string view::CheckoutBuilder::build_body() {
 
     return body.str();
 }
+
+view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::string &subtotal,
+                                       const std::string &taxes, const std::string &total,
+                                       const view::Table &cartTable, const std::string &error,
+                                       const std::map<std::string, std::string> &formErrors) : title(title),
+                                                                                              subtotal(subtotal),
+                                                                                              taxes(taxes),
+                                                                                              total(total),
+                                                                                              cartTable(cartTable),
+                                                                                              error(error),
+                                                                                              formErrors(formErrors) {}

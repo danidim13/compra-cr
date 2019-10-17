@@ -12,6 +12,7 @@
 namespace validate {
 
     const std::regex REGEX_NUMBER(R"(^[0-9]+$)");
+    const std::regex REGEX_CART_ITEMS(R"(^([0-9]+,)*([0-9]+)$)");
     const std::regex REGEX_DECIMAL(R"(^(\+|-)?[0-9]+(\.[0-9]+)?$)");
     const std::regex REGEX_SPANISH_NAMES(R"(^[a-zA-ZáéíóúüÁÉÍÓÚÜñÑ\s]*$)");
     const std::regex REGEX_USERNAME(R"(^[a-zA-Z0-9_.]+$)");

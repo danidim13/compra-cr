@@ -8,6 +8,7 @@
 
 #include "../PageBuilder.h"
 #include "../Table.h"
+#include <map>
 
 namespace view {
 
@@ -15,6 +16,11 @@ class CheckoutBuilder: public PageBuilder {
 public:
     CheckoutBuilder(const std::string &title, const std::string &subtotal, const std::string &taxes,
                     const std::string &total, const Table &cartTable, const std::string &error);
+
+    CheckoutBuilder(const std::string &title, const std::string &subtotal,
+                    const std::string &taxes, const std::string &total,
+                    const view::Table &cartTable, const std::string &error,
+                    const std::map<std::string, std::string> &formErrors);
 
 private:
     std::string build_body() override;
@@ -27,6 +33,7 @@ public:
     std::string taxes;
     std::string total;
     Table cartTable;
+    std::map<std::string, std::string> formErrors;
 
 };
 
