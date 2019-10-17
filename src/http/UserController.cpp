@@ -23,6 +23,10 @@
 #include <sstream>
 #include "UserController.h"
 
+/**
+ * Inputs: NA
+ * Outputs: NA
+ */
 void http::UserController::user_add_get() {
     Response *resp = router->get_response();
 
@@ -32,6 +36,10 @@ void http::UserController::user_add_get() {
 //    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
+/**
+ * Inputs: form -> user
+ * Outputs: NA
+ */
 void http::UserController::user_add_post() {
 
     Request req = router->get_request();
@@ -44,10 +52,10 @@ void http::UserController::user_add_post() {
     log_debug(NULL, (char*)req.m_Content.c_str());
 
     std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
-
     model::User user;
-    auto validator = user.get_defaultValidator();
+    validate::MapValidator validator = user.get_defaultValidator();
     auto result = validator.validate(data);
+
     if (result.valid) {
         user.set_from_map(data);
 
@@ -80,6 +88,10 @@ void http::UserController::user_add_post() {
 
 }
 
+/**
+ * Inputs: NA
+ * Outputs: NA
+ */
 void http::UserController::user_login_get() {
 
     Request req = router->get_request();
@@ -98,6 +110,12 @@ void http::UserController::user_login_get() {
 
 }
 
+/**
+ * Inputs:
+ *  - form -> credentials
+ * Outputs:
+ *  -
+ */
 void http::UserController::user_login_post() {
 
     Request req = router->get_request();
@@ -147,6 +165,10 @@ void http::UserController::user_login_post() {
     }
 }
 
+/**
+ * Inputs: NA
+ * Outputs: NA
+ */
 void http::UserController::user_logout_get() {
 
     Response *resp = router->get_response();

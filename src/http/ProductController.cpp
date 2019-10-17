@@ -24,6 +24,12 @@
 #include <sstream>
 #include "ProductController.h"
 
+/**
+ * Inputs:
+ *  - ?search
+ * Outputs:
+ *  - itemList
+ */
 void http::ProductController::product_list_get() {
 
     Request req = router->get_request();
@@ -33,10 +39,10 @@ void http::ProductController::product_list_get() {
     std::string title;
 
     auto it = req.m_queryMap.find("search");
+    validate::StringValidator validator(validate::REGEX_SPANISH_SENTENCE, 1, 30);
 
     if (it != req.m_queryMap.end() && !it->second.empty()) {
         // Hubo una búsqueda
-        validate::StringValidator validator(validate::REGEX_SPANISH_SENTENCE, 1, 30);
         if (validator.validate(it->second).first) {
             // Búsqueda válida
             title = "Resultado de búsqueda";
@@ -62,6 +68,13 @@ void http::ProductController::product_list_get() {
 //    std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
 }
 
+/**
+ * Inputs:
+ *  - cookie[user_id]
+ *
+ * Outputs: NA
+ *
+ */
 void http::ProductController::product_add_get() {
 
     Request req = router->get_request();
@@ -80,13 +93,25 @@ void http::ProductController::product_add_get() {
     }
 }
 
+/**
+ * Inputs:
+ *  - cookie["user_id"]
+ *  - form -> product
+ *
+ * Outputs: NA
+ */
 void http::ProductController::product_add_post() {
 
     Request req = router->get_request();
     Response *resp = router->get_response();
 
+    model::Product product;
+    validate::MapValidator validator = product.get_defaultValidator();
 
+
+    // Validación implícita al convertir a int
     unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+
     if (user_id > 0 ) {
 
         log_debug(NULL, (char *) "POST request en /product/add");
@@ -95,16 +120,13 @@ void http::ProductController::product_add_post() {
         log_debug(NULL, (char *) req.m_Content.c_str());
 
         std::map<std::string, std::string> data = split_query((char *) req.m_Content.c_str());
-        std::vector<std::string> select;
-        model::Product product;
-
         data["owner_id"] = std::to_string(user_id);
-
-        auto validator = product.get_defaultValidator();
         auto result = validator.validate(data);
+
         if (result.valid) {
 
             // Campos que vamos a guardar
+            std::vector<std::string> select;
             for (auto const &pair: data)
                 select.push_back(pair.first);
 
