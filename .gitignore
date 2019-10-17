@@ -138,3 +138,4 @@ logs/*
 .idea/*
 app_ecommerce
 app_ecommerce.cbp
+build/*
