@@ -6,7 +6,6 @@
 // Created by daniel on 15/10/19.
 //
 
-#include "ValidatorTest.h"
 #include "gtest/gtest.h"
 #include "../../src/validate/Validator.h"
 

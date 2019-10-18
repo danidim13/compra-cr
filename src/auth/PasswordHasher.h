@@ -13,7 +13,8 @@ namespace auth {
 
     const int SALT_BYTES = 6;
     const int KEY_LEN = 48;
-    const int ITER_MIN = 2000;
+    const int ITER_MIN = 4000;
+    const float CRYPT_TARGET_SEC = 0.05;
 
 class PasswordHasher {
 public:

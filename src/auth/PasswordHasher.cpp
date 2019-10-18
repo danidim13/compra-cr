@@ -43,7 +43,7 @@ std::string auth::PasswordHasher::passwordHash(const std::string &password) {
     int work_factor = 0;
     float seconds = 0;
 
-    while (seconds < 0.05 && work_factor < 999) {
+    while (seconds < CRYPT_TARGET_SEC && work_factor < 999) {
         clock_t t;
 
         ++work_factor;
