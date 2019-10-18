@@ -155,8 +155,8 @@ unsigned long http::Router::parse_query_string() {
     return m_request.m_queryMap.size();
 }
 
-http::Request &http::Router::get_request() {
-    return m_request;
+http::Request * http::Router::get_request() {
+    return &m_request;
 }
 
 http::Response * http::Router::get_response() {

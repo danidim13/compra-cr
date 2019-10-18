@@ -15,7 +15,7 @@ namespace http {
     public:
         Router();
         void parse_request();
-        Request &get_request();
+        Request * get_request();
         Response * get_response();
 
     protected:

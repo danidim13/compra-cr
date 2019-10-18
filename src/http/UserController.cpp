@@ -42,16 +42,16 @@ void http::UserController::user_add_get() {
  */
 void http::UserController::user_add_post() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /user/add");
-    log_debug(NULL, (char*)req.m_ContentType.c_str());
-    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
-    log_debug(NULL, (char*)req.m_Content.c_str());
+    log_debug(NULL, (char*)req->m_ContentType.c_str());
+    log_debug(NULL, (char*)std::to_string(req->m_ContentLength).c_str());
+    log_debug(NULL, (char*)req->m_Content.c_str());
 
-    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+    std::map<std::string, std::string> data = split_query((char*)req->m_Content.c_str());
     model::User user;
     validate::MapValidator validator = user.get_defaultValidator();
     auto result = validator.validate(data);
@@ -94,12 +94,12 @@ void http::UserController::user_add_post() {
  */
 void http::UserController::user_login_get() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
     std::string errors("");
 
-    auto it = req.m_queryMap.find("error");
-    if (it != req.m_queryMap.end()) {
+    auto it = req->m_queryMap.find("error");
+    if (it != req->m_queryMap.end()) {
         errors = it->second;
     }
 
@@ -118,16 +118,16 @@ void http::UserController::user_login_get() {
  */
 void http::UserController::user_login_post() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /user/login");
-    log_debug(NULL, (char*)req.m_ContentType.c_str());
-    log_debug(NULL, (char*)std::to_string(req.m_ContentLength).c_str());
-    log_debug(NULL, (char*)req.m_Content.c_str());
+    log_debug(NULL, (char*)req->m_ContentType.c_str());
+    log_debug(NULL, (char*)std::to_string(req->m_ContentLength).c_str());
+    log_debug(NULL, (char*)req->m_Content.c_str());
 
-    std::map<std::string, std::string> data = split_query((char*)req.m_Content.c_str());
+    std::map<std::string, std::string> data = split_query((char*)req->m_Content.c_str());
     validate::StringValidator validator(validate::REGEX_USERNAME, 1, 50);
 
     std::ostringstream cookie, msg;

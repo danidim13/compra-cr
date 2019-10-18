@@ -30,7 +30,7 @@ private:
     void hash_decode(const std::string &encoded, int *work_factor, unsigned char *digest, unsigned char *salt);
     const EVP_MD *digestAlg;
 
-    void handle_error();
+    void handle_error(const std::string &f, const int &l);
 
 };
 

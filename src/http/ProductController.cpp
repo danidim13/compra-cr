@@ -32,16 +32,16 @@
  */
 void http::ProductController::product_list_get() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
     std::vector<model::Product> itemList;
     std::list<view::ProductCard> cards;
     std::string title;
 
-    auto it = req.m_queryMap.find("search");
+    auto it = req->m_queryMap.find("search");
     validate::StringValidator validator(validate::REGEX_SPANISH_SENTENCE, 1, 30);
 
-    if (it != req.m_queryMap.end() && !it->second.empty()) {
+    if (it != req->m_queryMap.end() && !it->second.empty()) {
         // Hubo una búsqueda
         if (validator.validate(it->second).first) {
             // Búsqueda válida
@@ -77,12 +77,12 @@ void http::ProductController::product_list_get() {
  */
 void http::ProductController::product_add_get() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
     view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
 
-    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
     if (user_id > 0 ) {
         resp->header["Content-type"] = "text/html; charset=utf-8";
         resp->content = pageBuilder.build_document();
@@ -102,7 +102,7 @@ void http::ProductController::product_add_get() {
  */
 void http::ProductController::product_add_post() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
     model::Product product;
@@ -110,16 +110,16 @@ void http::ProductController::product_add_post() {
 
 
     // Validación implícita al convertir a int
-    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
+    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
 
     if (user_id > 0 ) {
 
         log_debug(NULL, (char *) "POST request en /product/add");
-        log_debug(NULL, (char *) req.m_ContentType.c_str());
-        log_debug(NULL, (char *) std::to_string(req.m_ContentLength).c_str());
-        log_debug(NULL, (char *) req.m_Content.c_str());
+        log_debug(NULL, (char *) req->m_ContentType.c_str());
+        log_debug(NULL, (char *) std::to_string(req->m_ContentLength).c_str());
+        log_debug(NULL, (char *) req->m_Content.c_str());
 
-        std::map<std::string, std::string> data = split_query((char *) req.m_Content.c_str());
+        std::map<std::string, std::string> data = split_query((char *) req->m_Content.c_str());
         data["owner_id"] = std::to_string(user_id);
         auto result = validator.validate(data);
 

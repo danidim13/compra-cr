@@ -30,17 +30,17 @@
  * outputs: cookie["shopping_cart"]
  */
 void http::CartController::cart_add_get() {
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
-    auto it = req.m_queryMap.find("id");
-    std::string items(req.m_CookieMap["shopping_cart"]);
+    auto it = req->m_queryMap.find("id");
+    std::string items(req->m_CookieMap["shopping_cart"]);
     std::ostringstream new_cookie;
 
     validate::StringValidator idValidator(validate::REGEX_NUMBER, 1, 10);
     validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 0, 100);
 
-    if (it != req.m_queryMap.end() && idValidator.validate(it->second).first &&
+    if (it != req->m_queryMap.end() && idValidator.validate(it->second).first &&
             itemsValidator.validate(items).first) {
 
         if (!items.empty()) {
@@ -74,21 +74,21 @@ void http::CartController::cart_add_get() {
  */
 void http::CartController::cart_checkout_get() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
     std::vector<model::Product> products;
 
     // Validación/sanitización implícita de user_id en la conversión
-    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
-    std::string items(req.m_CookieMap["shopping_cart"]);
-    std::string error(req.m_queryMap["error"]);
+    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
+    std::string items(req->m_CookieMap["shopping_cart"]);
+    std::string error(req->m_queryMap["error"]);
 
     validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 1, 100);
     validate::StringValidator errorValidator(validate::REGEX_SPANISH_SENTENCE, 0, 100);
 
     log_debug(NULL, (char*) "Procesando carrito de compras");
-    log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
-    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req.m_CookieMap["shopping_cart"]).c_str()));
+    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
+    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
 
     if (user_id > 0) {
         if (!items.empty() && itemsValidator.validate(items).first) {
@@ -137,16 +137,16 @@ void http::CartController::cart_checkout_get() {
  */
 void http::CartController::cart_checkout_post() {
 
-    Request req = router->get_request();
+    Request *req = router->get_request();
     Response *resp = router->get_response();
 
     std::vector<model::Product> products;
     std::ostringstream new_cookie;
 
     // Validación impícita de user_id
-    unsigned int user_id = strtoul(req.m_CookieMap["user_id"].c_str(), NULL, 10);
-    std::string items(req.m_CookieMap["shopping_cart"]);
-    std::map<std::string, std::string> card_data = split_query((char*)req.m_Content.c_str());
+    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
+    std::string items(req->m_CookieMap["shopping_cart"]);
+    std::map<std::string, std::string> card_data = split_query((char*)req->m_Content.c_str());
 
     validate::StringValidator itemsValidator(std::regex("^([0-9]+,)*[0-9]+$"), 1, 100);
     validate::MapValidator cardValidator = model::Purchase::CardValidator();
@@ -154,8 +154,8 @@ void http::CartController::cart_checkout_post() {
     auto cardValRes = cardValidator.validate(card_data);
 
     log_debug(NULL, (char*) "Procesando venta");
-    log_debug(NULL, (char*) (std::string("user_id=").append(req.m_CookieMap["user_id"]).c_str()));
-    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req.m_CookieMap["shopping_cart"]).c_str()));
+    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
+    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
 
     log_debug(NULL, (char*) "Información de tarjeta:");
     for (auto datum: card_data) {

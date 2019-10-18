@@ -33,18 +33,18 @@ void http::Controller::processAction() {
 
     // Obtener y procesar el request
     router->parse_request();
-    Request req = router->get_request();
-    if (!req.valid) {
+    Request *req = router->get_request();
+    if (!req->valid) {
         // TODO: return 500 internal server error
         log_warning(NULL, "Invalid request");
         exit(1);
     }
 
     // Obtener y ejecutar la acción correspondiente
-    if (req.m_Method.compare("GET") == 0) {
-        processGetReq(req);
-    } else if (req.m_Method.compare("POST") == 0) {
-        processPostReq(req);
+    if (req->m_Method.compare("GET") == 0) {
+        processGetReq(*req);
+    } else if (req->m_Method.compare("POST") == 0) {
+        processPostReq(*req);
     } else {
         // wtf
     }

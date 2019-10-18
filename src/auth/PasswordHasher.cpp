@@ -9,15 +9,16 @@
 #include <openssl/rand.h>
 #include <cassert>
 #include <cstring>
+#include <sstream>
 #include "../util/log.h"
 
 auth::PasswordHasher::PasswordHasher() {
     /* Load the human readable error strings for libcrypto */
-    ERR_load_crypto_strings();
+//    ERR_load_crypto_strings();
     /* Load all digest and cipher algorithms */
-    OpenSSL_add_all_algorithms();
+//    OpenSSL_add_all_algorithms();
     /* Load config file, and other important initialisation */
-    OPENSSL_config(NULL);
+//    OPENSSL_config(NULL);
 
     digestAlg = EVP_sha256();
 }
@@ -25,11 +26,11 @@ auth::PasswordHasher::PasswordHasher() {
 auth::PasswordHasher::~PasswordHasher() {
 
     /* Removes all digests and ciphers */
-    EVP_cleanup();
+//    EVP_cleanup();
     /* if you omit the next, a small leak may be left when you make use of the BIO (low level API) for e.g. base64 transformations */
-    CRYPTO_cleanup_all_ex_data();
+//    CRYPTO_cleanup_all_ex_data();
     /* Remove error strings */
-    ERR_free_strings();
+//    ERR_free_strings();
 
 }
 
@@ -54,7 +55,7 @@ std::string auth::PasswordHasher::passwordHash(const std::string &password) {
                                     digestAlg,
                                     KEY_LEN, digest);
         if (res != 1) {
-            handle_error();
+            handle_error(__FUNCTION__, __LINE__);
         }
 
         t = clock() - t;
@@ -82,7 +83,7 @@ bool auth::PasswordHasher::passwordVerify(const std::string &password, const std
                                 digestAlg,
                                 KEY_LEN, digestCompare);
     if (res == 0) {
-        handle_error();
+        handle_error(__FUNCTION__, __LINE__);
     }
 
     return memcmp(digest, digestCompare, KEY_LEN) == 0;
@@ -101,13 +102,13 @@ std::string auth::PasswordHasher::hash_encode(int work_factor, unsigned char *di
 
     written = EVP_EncodeBlock(digestEnc, digest, KEY_LEN);
     if (written == -1) {
-        handle_error();
+        handle_error(__FUNCTION__, __LINE__);
     }
     assert(written + 1 == digestEncLen);
 
     written = EVP_EncodeBlock(saltEnc, salt, SALT_BYTES);
     if (written == -1) {
-        handle_error();
+        handle_error(__FUNCTION__, __LINE__);
     }
     assert(written + 1 == saltEncLen);
 
@@ -143,20 +144,25 @@ void auth::PasswordHasher::hash_decode(const std::string &encoded, int *work_fac
 
     decoded = EVP_DecodeBlock(digest, digestEnc, digestEncLen-1);
     if (decoded == -1) {
-        handle_error();
+        handle_error(__FUNCTION__, __LINE__);
     }
     assert(decoded == KEY_LEN);
 
     decoded = EVP_DecodeBlock(salt, saltEnc, saltEncLen-1);
     if (decoded == -1) {
-        handle_error();
+        handle_error(__FUNCTION__, __LINE__);
     }
     assert(decoded == SALT_BYTES);
 
 }
 
-void auth::PasswordHasher::handle_error() {
+void auth::PasswordHasher::handle_error(const std::string &f, const int &l) {
+    std::ostringstream error_msg;
     unsigned long e = ERR_get_error();
-    log_error(NULL, ERR_error_string(e, NULL));
+    error_msg << "SSL Error (" << ERR_error_string(e, NULL) << ") "
+              << "on function " << f << ", file " __FILE__
+              << ", line " << l << std::endl;
+
+    log_error(NULL, (char*)error_msg.str().c_str());
     exit(1);
 }
