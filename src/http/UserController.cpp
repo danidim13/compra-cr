@@ -22,6 +22,7 @@
 #include "Controller.h"
 #include <sstream>
 #include "UserController.h"
+#include "../auth/PasswordHasher.h"
 
 /**
  * Inputs: NA
@@ -57,6 +58,8 @@ void http::UserController::user_add_post() {
     auto result = validator.validate(data);
 
     if (result.valid) {
+        auth::PasswordHasher hasher;
+        data["password"] = hasher.passwordHash(data["password"]);
         user.set_from_map(data);
 
         if (user.insert_autoId()) {
@@ -128,40 +131,34 @@ void http::UserController::user_login_post() {
     log_debug(NULL, (char*)req->m_Content.c_str());
 
     std::map<std::string, std::string> data = split_query((char*)req->m_Content.c_str());
-    validate::StringValidator validator(validate::REGEX_USERNAME, 1, 50);
+    validate::MapValidator validator =  model::User::LoginValidator();
+
 
     std::ostringstream cookie, msg;
 
-    auto it = data.find("username");
-    if (it != data.end()) {
-        auto vResult = validator.validate(it->second);
+    auto vResult = validator.validate(data);
 
-        if (vResult.first) {
-            auto res = model::User::login(it->second);
-            if (res.first) {
-                // Login exitoso
+    if (vResult.valid) {
+        auto res = model::User::login(data["username"], data["password"]);
+        if (res.first) {
+            // Login exitoso
 
-                cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
+            cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
 
-                resp->header["Status"] = "302 Found";
-                resp->header["Set-Cookie"] = cookie.str();
-                resp->header["Location"] = "/?login=success";
+            resp->header["Status"] = "302 Found";
+            resp->header["Set-Cookie"] = cookie.str();
+            resp->header["Location"] = "/?login=success";
 
-            } else {
-                msg << "Error de login: " << res.second;
-                log_debug(NULL, (char *) msg.str().c_str());
-                resp->header["Status"] = "303 See Other";
-                resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
-            }
         } else {
-            // Error de formulario
+            msg << "Error de login: " << res.second;
+            log_debug(NULL, (char *) msg.str().c_str());
             resp->header["Status"] = "303 See Other";
             resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
         }
     } else {
         // Error de formulario
         resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Por+favor+indique+su+usuario");
+        resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
     }
 }
 

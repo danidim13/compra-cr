@@ -1,10 +1,10 @@
 use ecommerce;
 
-insert into users (id, username, surname, last_name, email, phone)
-values (1, 'juan', 'Juan', 'Mora', 'juanperez@correo.com', '8800-2000');
+insert into users (id, username, surname, last_name, email, phone, password)
+values (1, 'juan', 'Juan', 'Mora', 'juanperez@correo.com', '8800-2000', '014$ab4e1NK1JX5HeE6YDyNscCfr/1IuIXL/2Jgls4nM2DH5eX0xvVAjkt03o0X6/b6Q$mAHZ3NOq');
 
-insert into users (id, username, surname, last_name, email, phone)
-values (2, 'mari', 'Maria', 'Rojas', 'marirj@correo.com', '2550-0552');
+insert into users (id, username, surname, last_name, email, phone, password)
+values (2, 'mari', 'Maria', 'Rojas', 'marirj@correo.com', '2550-0552', '014$aXF2hJ46u6LJUNIBn8VujcIV1HqSMewmruGjpZ75xvnnCsihVGCxMjU4hEhNCR7g$/flBkA2J');
 
 insert into products (id, owner_id, title, detail, unit_price, stock) values
 (1, 1, 'iPad 7th Gen (nueva)', 'iPad como nueva, sin uso casi', 500, 10 ),

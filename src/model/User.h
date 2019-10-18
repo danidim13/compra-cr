@@ -19,9 +19,11 @@ public:
     std::string surname(); // varchar(50) not null;
     std::string last_name(); // varchar(50) null;
     std::string email(); // varchar(256) character set ascii not null unique;
-    std::string phone(); // varchar(50) null
+    std::string phone(); // varchar(50) null;
+    std::string password(); // char(77) not null;
 
-    static std::pair<bool, std::string> login(std::string username);
+    static std::pair<bool, std::string> login(const std::string &username, const std::string &password);
+    static validate::MapValidator LoginValidator();
 };
 }
 

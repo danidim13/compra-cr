@@ -25,6 +25,8 @@ namespace validate {
     const std::regex REGEX_CCV(R"(^[0-9]{3,5}$)");
     const std::regex REGEX_EXPIRE(R"(^(1[0-2]|0[1-9])/[0-9]{2}$)");
     const std::regex REGEX_B64(R"(^([A-Za-z0-9+/]{3})*([A-Za-z0-9+/]{3}|[A-Za-z0-9+/]{2}=|[A-Za-z0-9+/]==)$)");
+    const std::regex REGEX_PASSWORD(R"((?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,})");
+
 
     class Validator {
 

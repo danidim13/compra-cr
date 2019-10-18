@@ -13,6 +13,7 @@ std::string view::UserAddBuilder::build_body() {
 
     view::Form form("POST", "/user/add", {
             {"Nombre de usuario", "username", "ejemplo"},
+            {"Contraseña", "password", "Debe tener al menos 8 caracteres, mayúscula, minúscula y un número o caracter especial"},
             {"Nombre", "surname", "Nombre"},
             {"Apellido(s)", "last_name", "Apellidos"},
             {"Correo electrónico", "email", "ejemplo@gmail.com"},

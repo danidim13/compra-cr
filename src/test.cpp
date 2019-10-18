@@ -37,6 +37,11 @@ void passwd_test() {
         std::cout << "blabla doesnt match password" << std::endl;
     }
 
+    res = hasher.passwordHash("Juan1234");
+    std::cout << "Contraseña Juan1234: " << res << std::endl;
+    res = hasher.passwordHash("Mari1234");
+    std::cout << "Contraseña Mari1234: " << res << std::endl;
+
 }
 
 void crypt_test() {

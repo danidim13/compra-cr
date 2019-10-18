@@ -32,7 +32,8 @@ std::string view::UserLoginBuilder::build_body() {
                     </div>)";
 
     body << view::Form("POST", "/user/login", {
-            {"Nombre de usuario", "username", "ejemplo"}
+            {"Nombre de usuario", "username", "ejemplo"},
+            {"Contraseña", "password", "********"}
     }) << std::endl;
 
     if (!error.empty()) {
