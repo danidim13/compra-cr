@@ -21,10 +21,15 @@ public:
 
     virtual ~PasswordHasher();
 
-    std::string passwordHash(std::string username, std::string password);
+    std::string passwordHash(const std::string &password);
+    bool passwordVerify(const std::string &password, const std::string &password_hash);
 
 private:
+    std::string hash_encode(int work_factor, unsigned char *digest, unsigned char *salt);
+    void hash_decode(const std::string &encoded, int *work_factor, unsigned char *digest, unsigned char *salt);
     const EVP_MD *digestAlg;
+
+    void handle_error();
 
 };
 

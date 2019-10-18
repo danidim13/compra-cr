@@ -26,8 +26,17 @@
 
 void passwd_test() {
     auth::PasswordHasher hasher;
-    auto res = hasher.passwordHash("", "contraseña");
+    auto res = hasher.passwordHash("contraseña");
     std::cout << res << std::endl;
+
+    if (hasher.passwordVerify("contraseña", res)) {
+        std::cout << "contraseña matches password" << std::endl;
+    }
+
+    if (!hasher.passwordVerify("blabla", res)) {
+        std::cout << "blabla doesnt match password" << std::endl;
+    }
+
 }
 
 void crypt_test() {
