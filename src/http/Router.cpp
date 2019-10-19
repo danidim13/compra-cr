@@ -25,11 +25,17 @@ http::Router::Router() {
     http::gpPathInfo = getenv("PATH_INFO"); // dirección relativa (desde script)
     http::gpHttpCookie = getenv("HTTP_COOKIE"); // dirección relativa (desde script)
 
+    http::gpRemoteAddr = getenv("REMOTE_ADDR"); // dirección relativa (desde script)
+    http::gpRemoteHost = getenv("REMOTE_HOST"); // dirección relativa (desde script)
+    http::gpUserAgent = getenv("HTTP_USER_AGENT"); // dirección relativa (desde script)
+
     char sbuf[1024];
     sprintf(sbuf, "Request received\nRequest method: %s\nQuery string: %s\nContent length: %s\n"
                   "Content type: %s\nRequest URI: %s\nScript name: %s\nPath info: %s\nCookie: %s\n"
-                  "\nargc: %d\n",
-                  gpMethod, gpQueryString, gpContentLength, gpContentType, gpRequestUri, gpScriptName, gpPathInfo, gpHttpCookie,
+                  "Remote addr: %s\nRemote host: %s\nUser-agent: %s\nargc: %d\n",
+                  gpMethod, gpQueryString, gpContentLength,
+                  gpContentType, gpRequestUri, gpScriptName, gpPathInfo, gpHttpCookie,
+                  gpRemoteAddr, gpRemoteHost, gpUserAgent,
                   giArgc);
     log_debug(NULL, sbuf);
 }

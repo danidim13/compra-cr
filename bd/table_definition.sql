@@ -14,6 +14,17 @@ create table users
     phone varchar(50) null,
     password char(77) not null
     );
+
+create table sessions
+    (
+    id char(16) not null primary key,
+    user_id int unsigned null,
+    data varchar(1023) not null,
+    time_created bigint not null,
+    time_last_access bigint not null,
+    remote_ip varchar(45) null,
+    user_agent varchar(255) null
+    );
     
 -- Tabla para productos en venta
 create table products
@@ -82,6 +93,9 @@ alter table purchases_products
     add foreign key (purchase_id) references purchases(id),
     add foreign key (product_id) references products(id),
     add foreign key (seller_id) references users(id);
+
+alter table sessions
+    add foreign key (user_id) references users(id);
     
 # alter table products_tags
 #     add foreign key (product_id) references products(id),

@@ -14,6 +14,9 @@ char *http::gpRequestUri = nullptr;
 char *http::gpScriptName = nullptr;
 char *http::gpPathInfo = nullptr;
 char *http::gpHttpCookie = nullptr;
+char *http::gpRemoteAddr = nullptr;
+char *http::gpRemoteHost = nullptr;
+char *http::gpUserAgent = nullptr;
 int http::giArgc;
 char **http::gsArgv;
 
