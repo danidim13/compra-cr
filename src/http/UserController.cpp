@@ -31,9 +31,7 @@
 void http::UserController::user_add_get() {
     Response *resp = router->get_response();
 
-    view::UserAddBuilder pageBuilder("Registrarse");
-    resp->header["Content-type"] = "text/html; charset=utf-8";
-    resp->content = pageBuilder.build_document();
+    pageView.reset(new view::UserAddBuilder("Registrarse"));
 //    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
@@ -69,24 +67,19 @@ void http::UserController::user_add_post() {
             msg << "Created new user with username '" << user.username() << "'";
             log_info(NULL, (char*) msg.str().c_str());
 
-    //        std::cout << "Status: 302 Found\n" << "Location: /\n\n";
-            resp->header["Status"] = "302 Found";
-            resp->header["Location"] = "/";
-    //        std::cout << *resp;
+            return Found("/");
 
         } else {
+            // FIXME:
             resp->header["Content-type"] = "text/html; charset=utf-8";
             resp->content = "Error";
-    //        std::cout << "Content-type: text/html; charset=utf-8\n\n" << "Error" << std::endl;
         }
     } else {
         log_debug(NULL, (char *) "Error de validacion");
         for (auto err : result.errors) {
             log_debug(NULL, (char*)err.second.c_str());
         }
-        view::UserAddBuilder pageBuilder("Registrarse", result.errors);
-        resp->header["Content-type"] = "text/html; charset=utf-8";
-        resp->content = pageBuilder.build_document();
+        pageView.reset(new view::UserAddBuilder("Registrarse", result.errors));
     }
 
 }
@@ -98,7 +91,6 @@ void http::UserController::user_add_post() {
 void http::UserController::user_login_get() {
 
     Request *req = router->get_request();
-    Response *resp = router->get_response();
     std::string errors("");
 
     auto it = req->m_queryMap.find("error");
@@ -106,11 +98,7 @@ void http::UserController::user_login_get() {
         errors = it->second;
     }
 
-    view::UserLoginBuilder pageBuilder("Acceder al sistema", errors);
-    resp->header["Content-type"] = "text/html; charset=utf-8";
-    resp->content = pageBuilder.build_document();
-//    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
-
+    pageView.reset(new view::UserLoginBuilder("Acceder al sistema", errors));
 }
 
 /**
@@ -122,7 +110,6 @@ void http::UserController::user_login_get() {
 void http::UserController::user_login_post() {
 
     Request *req = router->get_request();
-    Response *resp = router->get_response();
 
 
     log_debug(NULL, (char*)"POST request en /user/login");
@@ -145,19 +132,16 @@ void http::UserController::user_login_post() {
 
 
             sessionManager.setUser(strtoul(res.second.c_str(), NULL, 10));
-            resp->header["Status"] = "302 Found";
-            resp->header["Location"] = "/?login=success";
+            return Found("/?login=success");
 
         } else {
             msg << "Error de login: " << res.second;
             log_debug(NULL, (char *) msg.str().c_str());
-            resp->header["Status"] = "303 See Other";
-            resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
+            return SeeOther("/user/login?error=Error%2C+verifique+sus+credenciales");
         }
     } else {
         // Error de formulario
-        resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Error%2C+verifique+sus+credenciales");
+        return SeeOther("/user/login?error=Error%2C+verifique+sus+credenciales");
     }
 }
 
@@ -167,11 +151,9 @@ void http::UserController::user_login_post() {
  */
 void http::UserController::user_logout_get() {
 
-    Response *resp = router->get_response();
     std::ostringstream cookie;
 
 
     sessionManager.setUser(0);
-    resp->header["Status"] = "302 Found";
-    resp->header["Location"] = "/?logout=success";
+    return Found("/?logout=success");
 }

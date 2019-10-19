@@ -62,10 +62,7 @@ void http::ProductController::product_list_get() {
         cards.push_back(view::ProductCard(item.id(), item.title(), item.detail(), item.unit_price()));
     }
 
-    view::ProductListBuilder pageBuilder(title, cards);
-    resp->header["Content-type"] = "text/html; charset=utf-8";
-    resp->content = pageBuilder.build_document();
-//    std::cout << "Content-type: text/html; charset=utf-8\n\n" << pageBuilder.build_document() << std::endl;
+    pageView.reset(new view::ProductListBuilder(title, cards));
 }
 
 /**
@@ -77,19 +74,11 @@ void http::ProductController::product_list_get() {
  */
 void http::ProductController::product_add_get() {
 
-    Request *req = router->get_request();
-    Response *resp = router->get_response();
-
-    view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
-
     unsigned int user_id = sessionManager.getUser();
     if (user_id > 0 ) {
-        resp->header["Content-type"] = "text/html; charset=utf-8";
-        resp->content = pageBuilder.build_document();
-//        std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
+        pageView.reset(new view::ProductAddBuilder("Agregar producto al catálogo"));
     } else {
-        resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+agregar+productos");
+        return SeeOther("/user/login?error=Debe+loggearse+para+agregar+productos");
     }
 }
 
@@ -138,22 +127,19 @@ void http::ProductController::product_add_post() {
                 msg << "Created new product with title'" << product.title() << "'";
                 log_info(NULL, (char *) msg.str().c_str());
 
-                resp->header["Status"] = "302 Found";
-                resp->header["Location"] = "/";
+                return Found("/");
             } else {
+                // FIXME:
                 resp->header["Content-type"] = "text/html; charset=utf-8";
                 resp->content = "Error";
             }
         } else {
             // Error de validación
-            view::ProductAddBuilder pageBuilder("Agregar producto al catálogo", result.errors);
-            resp->header["Content-type"] = "text/html; charset=utf-8";
-            resp->content = pageBuilder.build_document();
+            pageView.reset(new view::ProductAddBuilder("Agregar producto al catálogo", result.errors));
         }
     } else {
-
-        resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+agregar+productos");
+        // No hay usuario loggeado
+        return SeeOther("/user/login?error=Debe+loggearse+para+agregar+productos");
     }
 
 }

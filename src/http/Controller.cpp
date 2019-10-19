@@ -39,11 +39,11 @@ void http::Controller::processAction() {
 
     processReq(*(router->get_request()));
 
-    // settear cookie
+    // Settear cookie
     refreshSession();
 
     // Escupir el resultado
-    std::cout << *(get_router()->get_response()) << std::endl;
+    makeResponse();
 }
 
 void http::Controller::validateReq() {
@@ -172,5 +172,38 @@ void http::Controller::processPostReq(const http::Request &req) {
     }
 
 }
+
+void http::Controller::makeResponse() {
+    if (pageView) {
+
+        if (sessionManager.getUser() > 0) {
+            pageView->setUserInfo("bla", 0);
+        }
+
+        Response *resp = router->get_response();
+        resp->header["Content-type"] = "text/html; charset=utf-8";
+        resp->content = pageView->build_document();
+    }
+    std::cout << *(router->get_response()) << std::endl;
+}
+
+void http::Controller::Found(std::string location) {
+    Response *resp = router->get_response();
+    resp->header["Status"] = "302 Found";
+    resp->header["Location"] = location;
+}
+
+void http::Controller::SeeOther(std::string location) {
+    Response *resp = router->get_response();
+    resp->header["Status"] = "303 See Other";
+    resp->header["Location"] = location;
+}
+
+void http::Controller::BadRequest(std::string location){
+    Response *resp = router->get_response();
+    resp->header["Status"] = "400 Bad Request";
+    resp->header["Location"] = "/";
+}
+
 
 

@@ -7,8 +7,10 @@
 
 
 #include <string>
+#include <memory>
 #include "Router.h"
 #include "../auth/SessionManager.h"
+#include "../view/PageBuilder.h"
 
 #define LATEST 10
 
@@ -23,6 +25,11 @@ public:
 protected:
     Router *router;
     auth::SessionManager sessionManager;
+    std::unique_ptr<view::PageBuilder> pageView;
+
+    void Found(std::string location);
+    void SeeOther(std::string location);
+    void BadRequest(std::string location);
 
 private:
     void validateReq();
@@ -31,7 +38,7 @@ private:
     void processGetReq(const Request &request);
     void processPostReq(const Request &request);
     void refreshSession();
-
+    void makeResponse();
 
 };
 

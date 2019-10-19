@@ -13,7 +13,7 @@ namespace view {
 
 class PageBuilder {
 public:
-    PageBuilder() = default;
+    PageBuilder();
     PageBuilder(const std::string &title);
 
     virtual std::string build_document();
@@ -23,10 +23,12 @@ public:
     virtual std::string build_content();
     virtual std::string build_footer();
 
+    void setUserInfo(const std::string &name, const int &cartItems);
+
 protected:
     std::string title;
     std::string username;
-    bool logger;
+    bool logged;
 };
 
 }

@@ -41,25 +41,32 @@ std::string view::PageBuilder::build_head() {
 }
 
 std::string view::PageBuilder::build_header() {
-    return R"(
+    std::ostringstream header;
+    header << R"(
     <header>
         <!-- Inicio navegación -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="#">CompraCR</a>
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="/">Inicio</a>
-                    <a class="nav-item nav-link" href="/user/add">Registrarse</a>
-                    <a class="nav-item nav-link" href="/user/login">Login</a>
-                    <a class="nav-item nav-link" href="/user/logout">Logout</a>
-                    <a class="nav-item nav-link" href="/product/add">Vender</a>
-                    <a class="nav-item nav-link" href="/cart/checkout">Carrito de compras</a>
+)";
+    header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/">Inicio</a>)" << std::endl;
+    if (logged) {
+        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/product/add">Vender</a>)" << std::endl;
+        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/cart/checkout">Carrito de compras</a>)" << std::endl;
+        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/logout">Logout</a>)" << std::endl;
+    } else {
+        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/add">Registrarse</a>)" << std::endl;
+        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/login">Login</a>)" << std::endl;
+    }
+    header << R"(
                 </div>
             </div>
         </nav>
         <!-- Fin navegación -->
     </header>
 )";
+    return header.str();
 }
 
 std::string view::PageBuilder::build_body() {
@@ -185,6 +192,16 @@ std::string view::PageBuilder::build_footer() {
 )";
 }
 
-view::PageBuilder::PageBuilder(const std::string &title) : title(title) {}
+view::PageBuilder::PageBuilder(const std::string &title) : title(title), logged(false) {}
+
+void view::PageBuilder::setUserInfo(const std::string &name, const int &cartItems) {
+    logged = true;
+    username = name;
+
+}
+
+view::PageBuilder::PageBuilder() : logged(false) {
+
+}
 
 

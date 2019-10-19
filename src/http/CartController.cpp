@@ -47,12 +47,10 @@ void http::CartController::cart_add_get() {
         items.append(it->second);
         sessionManager.setShoppingCart(items);
 
-        resp->header["Status"] = "302 Found";
-        resp->header["Location"] = "/";
+        return Found("/");
     } else {
         // Error
-        resp->header["Status"] = "400 Bad Request";
-        resp->header["Location"] = "/";
+        return BadRequest("/");
     }
 }
 
@@ -94,21 +92,14 @@ void http::CartController::cart_checkout_get() {
                 error = "Error: por favor intente de nuevo";
             }
 
-            view::CheckoutBuilder pageBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error);
-
-            resp->header["Content-type"] = "text/html; charset=utf-8";
-            resp->content = pageBuilder.build_document();
+            return pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error));
         } else {
             view::Table table({"Producto", "Cantidad", "Disponible", "Precio p/unidad"});
             table.content.push_back({"Aún no tiene nada en su carrito", "", "", ""});
-            view::CheckoutBuilder pageBuilder("Su orden", "0", "0", "0", table, error);
-
-            resp->header["Content-type"] = "text/html; charset=utf-8";
-            resp->content = pageBuilder.build_document();
+            return pageView.reset(new view::CheckoutBuilder("Su orden", "0", "0", "0", table, error));
         }
     } else {
-        resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
+        return SeeOther("/user/login?error=Debe+loggearse+para+hacer+una+compra");
     }
 }
 
@@ -180,22 +171,17 @@ void http::CartController::cart_checkout_post() {
                         // Expirar el cookie poco después
                         sessionManager.setShoppingCart(items, true);
 
-                        resp->header["Status"] = "302 Found";
-                        resp->header["Location"] = std::string("/cart/checkout");
+                        return Found("/cart/checkout");
                     } else {
                         // Fail
 
                         // Redirigir con error
-                        resp->header["Status"] = "303 See Other";
-                        resp->header["Location"] = std::string("/cart/checkout?error=").append(transaction_res.second);
+                        return SeeOther(std::string("/cart/checkout?error=").append(transaction_res.second));
                     }
 
                 } else {
-
                     // Redirigir con error
-                    resp->header["Status"] = "303 See Other";
-                    resp->header["Location"] = std::string(
-                            "/cart/checkout?error=Solicit%C3%B3+mas+productos+de+los+que+hay+disponibles");
+                    return SeeOther( "/cart/checkout?error=Solicit%C3%B3+mas+productos+de+los+que+hay+disponibles");
                 }
 
             } else {
@@ -207,19 +193,15 @@ void http::CartController::cart_checkout_post() {
                 SaleData sale = getSaleData(products);
                 std::string error("Error en formulario, revise sus datos");
 
-                view::CheckoutBuilder pageBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, cardValRes.errors);
-                resp->header["Content-type"] = "text/html; charset=utf-8";
-                resp->content = pageBuilder.build_document();
+                pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, cardValRes.errors));
             }
         } else {
             // Carrito vacío
-            resp->header["Status"] = "303 See Other";
-            resp->header["Location"] = std::string("/cart/checkout?error=Agregue+productos+para+realizar+su+compra");
+            return SeeOther("/cart/checkout?error=Agregue+productos+para+realizar+su+compra");
         }
     } else {
         // Usuario no loggeado
-        resp->header["Status"] = "303 See Other";
-        resp->header["Location"] = std::string("/user/login?error=Debe+loggearse+para+hacer+una+compra");
+        return SeeOther("/user/login?error=Debe+loggearse+para+hacer+una+compra");
     }
 }
 
@@ -235,8 +217,7 @@ void http::CartController::cart_clear_get() {
 
     sessionManager.setShoppingCart("");
 
-    resp->header["Status"] = "302 Found";
-    resp->header["Location"] = "/cart/checkout";
+    return Found("/cart/checkout");
 }
 
 http::CartController::SaleData http::CartController::getSaleData(std::vector<model::Product> products) {
