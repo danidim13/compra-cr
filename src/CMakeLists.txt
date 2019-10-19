@@ -10,11 +10,15 @@ set(core_SRCS
         http/Request.cpp http/Request.h
         http/Controller.cpp http/Controller.h
         http/Response.cpp http/Response.h
+        http/UserController.cpp http/UserController.h
+        http/ProductController.cpp http/ProductController.h
+        http/CartController.cpp http/CartController.h
         model/model.cpp model/model.h
         model/ConnectionHandler.h
         model/User.cpp model/User.h
         model/Product.cpp model/Product.h
         model/Purchase.cpp model/Purchase.h
+        model/CardPayment.cpp model/CardPayment.h
         view/ProductCard.cpp view/ProductCard.h
         view/product/ProductListBuilder.cpp view/product/ProductListBuilder.h
         view/user/UserAddBuilder.cpp view/user/UserAddBuilder.h
@@ -26,8 +30,15 @@ set(core_SRCS
         view/product/ProductAddBuilder.cpp view/product/ProductAddBuilder.h
         view/user/UserLoginBuilder.cpp view/user/UserLoginBuilder.h
         view/Table.cpp view/Table.h
-        view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h model/CardPayment.cpp model/CardPayment.h
-        validate/Validator.cpp validate/Validator.h validate/EmailValidator.cpp validate/EmailValidator.h validate/StringValidator.cpp validate/StringValidator.h validate/MapValidator.cpp validate/MapValidator.h http/UserController.cpp http/UserController.h http/ProductController.cpp http/ProductController.h http/CartController.cpp http/CartController.h auth/PasswordHasher.cpp auth/PasswordHasher.h auth/SessionManager.cpp auth/SessionManager.h view/other/NotFoundPageBuilder.cpp view/other/NotFoundPageBuilder.h)
+        view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h
+        view/other/NotFoundPageBuilder.cpp view/other/NotFoundPageBuilder.h
+        validate/Validator.cpp validate/Validator.h
+        validate/EmailValidator.cpp validate/EmailValidator.h
+        validate/StringValidator.cpp validate/StringValidator.h
+        validate/MapValidator.cpp validate/MapValidator.h
+        auth/PasswordHasher.cpp auth/PasswordHasher.h
+        auth/SessionManager.cpp auth/SessionManager.h
+        )
 
 
 add_library(core ${core_SRCS})
