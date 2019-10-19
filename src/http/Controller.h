@@ -30,9 +30,12 @@ protected:
     void Found(std::string location);
     void SeeOther(std::string location);
     void BadRequest(std::string location);
+    void NotFound();
+    void BadRequest();
+    void MethodNotAllowed();
 
 private:
-    void validateReq();
+    bool validateReq();
     void setSession();
     void processReq(const Request &request);
     void processGetReq(const Request &request);

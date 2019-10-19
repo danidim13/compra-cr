@@ -50,14 +50,14 @@ std::string view::PageBuilder::build_header() {
                 <a class="navbar-brand" href="#">CompraCR</a>
                 <div class="navbar-nav mr-auto">
 )";
-    header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/">Inicio</a>)" << std::endl;
+    header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/">Inicio</a>)" << std::endl;
     if (logged) {
-        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/product/add">Vender</a>)" << std::endl;
-        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/cart/checkout">Carrito de compras</a>)" << std::endl;
-        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/logout">Logout</a>)" << std::endl;
+        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/product/add">Vender</a>)" << std::endl;
+        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/cart/checktout">Carrito de compras</a>)" << std::endl;
+        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/logout">Logout</a>)" << std::endl;
     } else {
-        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/add">Registrarse</a>)" << std::endl;
-        header << std::string(' ', 5*4) << R"(<a class="nav-item nav-link" href="/user/login">Login</a>)" << std::endl;
+        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/add">Registrarse</a>)" << std::endl;
+        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/login">Login</a>)" << std::endl;
     }
     header << R"(
                 </div>

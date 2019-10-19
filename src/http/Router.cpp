@@ -75,17 +75,17 @@ void http::Router::parse_request() {
                 m_request.m_Content = "";
             } else {
                 log_error(NULL, (char *) "Unexpected CONTENT_LENGTH value");
-                exit(1);
+                return;
             }
         } else {
             log_error(NULL, (char *) "No CONTENT_LENGTH value");
-            exit(1);
+            return;
         }
     } else {
         std::string error_msg("Unrecognized m_request method: ");
         error_msg.append(gpMethod);
         log_error(NULL, (char*)error_msg.c_str());
-        exit(1);
+        return;
     }
 
 //    this->parse_query_string();

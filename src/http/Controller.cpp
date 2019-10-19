@@ -24,6 +24,7 @@
 #include "UserController.h"
 #include "ProductController.h"
 #include "CartController.h"
+#include "../view/other/NotFoundPageBuilder.h"
 
 http::Controller::Controller() {
     router = http::get_router();
@@ -32,29 +33,27 @@ http::Controller::Controller() {
 void http::Controller::processAction() {
 
     // Obtener y procesar el request
-    validateReq();
+    if (validateReq()) {
+        // Obtener información de sesión o generar una nueva
+        setSession();
 
-    // Obtener información de sesión o generar una nueva
-    setSession();
+        processReq(*(router->get_request()));
 
-    processReq(*(router->get_request()));
-
-    // Settear cookie
-    refreshSession();
+        // Settear cookie
+        refreshSession();
+    } else {
+        log_warning(NULL, "Invalid request");
+        BadRequest();
+    }
 
     // Escupir el resultado
     makeResponse();
 }
 
-void http::Controller::validateReq() {
+bool http::Controller::validateReq() {
     router->parse_request();
     Request *req = router->get_request();
-    if (!req->valid) {
-        // TODO: return 500 internal server error
-        log_warning(NULL, "Invalid request");
-        exit(1);
-    }
-
+    return req->valid;
 }
 
 void http::Controller::setSession() {
@@ -85,7 +84,7 @@ void http::Controller::processReq(const http::Request &request) {
     } else if (request.m_Method.compare("POST") == 0) {
         processPostReq(request);
     } else {
-        // wtf
+        return MethodNotAllowed();
     }
 
 }
@@ -143,8 +142,7 @@ void http::Controller::processGetReq(const Request &request) {
 
     // Sin acción
     else {
-        // TODO: return 404 not found
-
+        return NotFound();
     }
 }
 
@@ -168,7 +166,7 @@ void http::Controller::processPostReq(const http::Request &req) {
 
     // Sin acción
     else {
-        // TODO: return 404 not found
+        return NotFound();
     }
 
 }
@@ -203,6 +201,23 @@ void http::Controller::BadRequest(std::string location){
     Response *resp = router->get_response();
     resp->header["Status"] = "400 Bad Request";
     resp->header["Location"] = "/";
+}
+
+void http::Controller::BadRequest(){
+    Response *resp = router->get_response();
+    resp->header["Status"] = "400 Bad Request";
+}
+
+void http::Controller::NotFound() {
+    Response *resp = router->get_response();
+    resp->header["Status"] = "404 Not Found";
+    pageView.reset(new view::NotFoundPageBuilder());
+}
+
+void http::Controller::MethodNotAllowed() {
+    Response *resp = router->get_response();
+    resp->header["Status"] = "405 Method Not Allowed";
+
 }
 
 

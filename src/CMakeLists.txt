@@ -27,7 +27,7 @@ set(core_SRCS
         view/user/UserLoginBuilder.cpp view/user/UserLoginBuilder.h
         view/Table.cpp view/Table.h
         view/cart/CheckoutBuilder.cpp view/cart/CheckoutBuilder.h model/CardPayment.cpp model/CardPayment.h
-        validate/Validator.cpp validate/Validator.h validate/EmailValidator.cpp validate/EmailValidator.h validate/StringValidator.cpp validate/StringValidator.h validate/MapValidator.cpp validate/MapValidator.h http/UserController.cpp http/UserController.h http/ProductController.cpp http/ProductController.h http/CartController.cpp http/CartController.h auth/PasswordHasher.cpp auth/PasswordHasher.h auth/SessionManager.cpp auth/SessionManager.h)
+        validate/Validator.cpp validate/Validator.h validate/EmailValidator.cpp validate/EmailValidator.h validate/StringValidator.cpp validate/StringValidator.h validate/MapValidator.cpp validate/MapValidator.h http/UserController.cpp http/UserController.h http/ProductController.cpp http/ProductController.h http/CartController.cpp http/CartController.h auth/PasswordHasher.cpp auth/PasswordHasher.h auth/SessionManager.cpp auth/SessionManager.h view/other/NotFoundPageBuilder.cpp view/other/NotFoundPageBuilder.h)
 
 
 add_library(core ${core_SRCS})
