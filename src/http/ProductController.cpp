@@ -82,7 +82,7 @@ void http::ProductController::product_add_get() {
 
     view::ProductAddBuilder pageBuilder("Agregar producto al catálogo");
 
-    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
+    unsigned int user_id = sessionManager.getUser();
     if (user_id > 0 ) {
         resp->header["Content-type"] = "text/html; charset=utf-8";
         resp->content = pageBuilder.build_document();
@@ -110,7 +110,7 @@ void http::ProductController::product_add_post() {
 
 
     // Validación implícita al convertir a int
-    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
+    unsigned int user_id = sessionManager.getUser();
 
     if (user_id > 0 ) {
 

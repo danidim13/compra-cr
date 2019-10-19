@@ -15,8 +15,8 @@ class Response {
 public:
     friend std::ostream &operator<<(std::ostream &os, const Response &response);
     std::map<std::string, std::string> header;
+    std::string cookies;
     std::string content;
-
 };
 std::ostream &operator<<(std::ostream &os, const Response &response);
 

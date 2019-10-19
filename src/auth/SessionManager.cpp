@@ -4,6 +4,7 @@
 
 #include "SessionManager.h"
 #include "../util/log.h"
+#include "../util/cookie.h"
 #include <openssl/conf.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
@@ -44,3 +45,42 @@ void auth::SessionManager::handle_error(const std::string &f, const int &l) {
     log_error(NULL, (char*)error_msg.str().c_str());
     exit(1);
 }
+
+void auth::SessionManager::setUser(const unsigned int id) {
+    user_id = id;
+
+}
+
+unsigned int auth::SessionManager::getUser() const {
+    return user_id;
+}
+
+void auth::SessionManager::setShoppingCart(const std::string &cart, const bool &purchased) {
+    shopping_cart = cart;
+    purchase_finalized = purchased;
+}
+
+std::string auth::SessionManager::getCookie() const {
+    std::ostringstream cookie;
+
+    if (user_id > 0) {
+        cookie << "Set-Cookie:" << "user_id=" << user_id << "; Path=/;" << "Expires=" << renewed_time() << std::endl;
+    } else if (user_id == 0) {
+        cookie << "Set-Cookie:" << "user_id=none" << "; Path=/;" << "Expires=" << expired_time() << std::endl;
+    }
+
+    if (purchase_finalized) {
+        cookie << "Set-Cookie:" << "shopping_cart=" << shopping_cart << "; Path=/;" << "Expires=" << renewed_time(0, 1);
+    } else {
+        cookie << "Set-Cookie:" << "shopping_cart=" << shopping_cart << "; Path=/;" << "Expires=" << renewed_time() << std::endl;
+    }
+    return cookie.str();
+}
+
+std::string auth::SessionManager::getShoppingCart() const {
+    return shopping_cart;
+}
+
+auth::SessionManager::SessionManager() : user_id(0), shopping_cart("") {}
+
+

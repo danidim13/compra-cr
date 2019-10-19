@@ -32,6 +32,21 @@ http::Controller::Controller() {
 void http::Controller::processAction() {
 
     // Obtener y procesar el request
+    validateReq();
+
+    // Obtener información de sesión o generar una nueva
+    setSession();
+
+    processReq(*(router->get_request()));
+
+    // settear cookie
+    refreshSession();
+
+    // Escupir el resultado
+    std::cout << *(get_router()->get_response()) << std::endl;
+}
+
+void http::Controller::validateReq() {
     router->parse_request();
     Request *req = router->get_request();
     if (!req->valid) {
@@ -40,17 +55,44 @@ void http::Controller::processAction() {
         exit(1);
     }
 
+}
+
+void http::Controller::setSession() {
+
+    Request *req = router->get_request();
+
+    // Validación/sanitización implícita de user_id en la conversión
+    if (req->m_CookieMap.find("user_id") != req->m_CookieMap.end()) {
+        sessionManager.setUser(strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10));
+    } else {
+        sessionManager.setUser(0);
+    }
+
+    if (req->m_CookieMap.find("shopping_cart") != req->m_CookieMap.end()) {
+        std::string items(req->m_CookieMap["shopping_cart"]);
+        validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 1, 100);
+        if (itemsValidator.validate(items).first) {
+            sessionManager.setShoppingCart(items);
+        }
+    }
+
+}
+
+void http::Controller::processReq(const http::Request &request) {
     // Obtener y ejecutar la acción correspondiente
-    if (req->m_Method.compare("GET") == 0) {
-        processGetReq(*req);
-    } else if (req->m_Method.compare("POST") == 0) {
-        processPostReq(*req);
+    if (request.m_Method.compare("GET") == 0) {
+        processGetReq(request);
+    } else if (request.m_Method.compare("POST") == 0) {
+        processPostReq(request);
     } else {
         // wtf
     }
 
-    // Escupir el resultado
-    std::cout << *(get_router()->get_response()) << std::endl;
+}
+
+void http::Controller::refreshSession() {
+    Response * response = router->get_response();
+    response->cookies = sessionManager.getCookie();
 }
 
 void http::Controller::processGetReq(const Request &request) {
@@ -130,4 +172,5 @@ void http::Controller::processPostReq(const http::Request &req) {
     }
 
 }
+
 

@@ -134,7 +134,7 @@ void http::UserController::user_login_post() {
     validate::MapValidator validator =  model::User::LoginValidator();
 
 
-    std::ostringstream cookie, msg;
+    std::ostringstream msg;
 
     auto vResult = validator.validate(data);
 
@@ -143,10 +143,9 @@ void http::UserController::user_login_post() {
         if (res.first) {
             // Login exitoso
 
-            cookie << "user_id=" << res.second << "; Path=/;" << "Expires=" << renewed_time();
 
+            sessionManager.setUser(strtoul(res.second.c_str(), NULL, 10));
             resp->header["Status"] = "302 Found";
-            resp->header["Set-Cookie"] = cookie.str();
             resp->header["Location"] = "/?login=success";
 
         } else {
@@ -171,13 +170,8 @@ void http::UserController::user_logout_get() {
     Response *resp = router->get_response();
     std::ostringstream cookie;
 
-    cookie << "user_id=none;" <<"; Path=/;" << "Expires=" << expired_time();
 
+    sessionManager.setUser(0);
     resp->header["Status"] = "302 Found";
-    resp->header["Set-Cookie"] = cookie.str();
     resp->header["Location"] = "/?logout=success";
-
-//    std::cout << "Status: 302 Found\n"
-//              << "Set-Cookie: user_id=none;" <<"; Path=/;" << "Expires=" << expired_time() << "\n"
-//              << "Location: /?logout=success\n\n";
 }

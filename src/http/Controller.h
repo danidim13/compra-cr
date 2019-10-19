@@ -8,6 +8,7 @@
 
 #include <string>
 #include "Router.h"
+#include "../auth/SessionManager.h"
 
 #define LATEST 10
 
@@ -21,9 +22,17 @@ public:
 
 protected:
     Router *router;
+    auth::SessionManager sessionManager;
+
 private:
+    void validateReq();
+    void setSession();
+    void processReq(const Request &request);
     void processGetReq(const Request &request);
     void processPostReq(const Request &request);
+    void refreshSession();
+
+
 };
 
 }

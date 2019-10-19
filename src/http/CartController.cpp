@@ -34,22 +34,19 @@ void http::CartController::cart_add_get() {
     Response *resp = router->get_response();
 
     auto it = req->m_queryMap.find("id");
-    std::string items(req->m_CookieMap["shopping_cart"]);
-    std::ostringstream new_cookie;
+    std::string items(sessionManager.getShoppingCart());
 
     validate::StringValidator idValidator(validate::REGEX_NUMBER, 1, 10);
-    validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 0, 100);
 
-    if (it != req->m_queryMap.end() && idValidator.validate(it->second).first &&
-            itemsValidator.validate(items).first) {
+    if (it != req->m_queryMap.end() && idValidator.validate(it->second).first ) {
 
         if (!items.empty()) {
             items.append(",");
         }
 
         items.append(it->second);
-        new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time();
-        resp->header["Set-Cookie"] = new_cookie.str();
+        sessionManager.setShoppingCart(items);
+
         resp->header["Status"] = "302 Found";
         resp->header["Location"] = "/";
     } else {
@@ -78,20 +75,16 @@ void http::CartController::cart_checkout_get() {
     Response *resp = router->get_response();
     std::vector<model::Product> products;
 
-    // Validación/sanitización implícita de user_id en la conversión
-    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
-    std::string items(req->m_CookieMap["shopping_cart"]);
+    std::string items = sessionManager.getShoppingCart();
     std::string error(req->m_queryMap["error"]);
-
-    validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 1, 100);
     validate::StringValidator errorValidator(validate::REGEX_SPANISH_SENTENCE, 0, 100);
 
     log_debug(NULL, (char*) "Procesando carrito de compras");
     log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
     log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
 
-    if (user_id > 0) {
-        if (!items.empty() && itemsValidator.validate(items).first) {
+    if (sessionManager.getUser() > 0) {
+        if (!items.empty()) {
 
             products = model::Product::getItemsFromCart(items);
 
@@ -143,12 +136,11 @@ void http::CartController::cart_checkout_post() {
     std::vector<model::Product> products;
     std::ostringstream new_cookie;
 
-    // Validación impícita de user_id
-    unsigned int user_id = strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10);
-    std::string items(req->m_CookieMap["shopping_cart"]);
-    std::map<std::string, std::string> card_data = split_query((char*)req->m_Content.c_str());
+    // Validación en sessionManager de user_id y shopping_cart
+    unsigned int user_id = sessionManager.getUser();
+    std::string items(sessionManager.getShoppingCart());
 
-    validate::StringValidator itemsValidator(std::regex("^([0-9]+,)*[0-9]+$"), 1, 100);
+    std::map<std::string, std::string> card_data = split_query((char*)req->m_Content.c_str());
     validate::MapValidator cardValidator = model::Purchase::CardValidator();
 
     auto cardValRes = cardValidator.validate(card_data);
@@ -163,7 +155,7 @@ void http::CartController::cart_checkout_post() {
     }
 
     if (user_id > 0) {
-        if (!items.empty() && itemsValidator.validate(items).first) {
+        if (!items.empty()) {
 
             products = model::Product::getItemsFromCart(items);
 
@@ -186,17 +178,12 @@ void http::CartController::cart_checkout_post() {
                     if (transaction_res.first) {
 
                         // Expirar el cookie poco después
-                        new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(0, 1);
-                        resp->header["Set-Cookie"] = new_cookie.str();
+                        sessionManager.setShoppingCart(items, true);
 
                         resp->header["Status"] = "302 Found";
                         resp->header["Location"] = std::string("/cart/checkout");
                     } else {
                         // Fail
-
-                        // Renovar el cookie
-                        new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(20, 0);
-                        resp->header["Set-Cookie"] = new_cookie.str();
 
                         // Redirigir con error
                         resp->header["Status"] = "303 See Other";
@@ -204,11 +191,6 @@ void http::CartController::cart_checkout_post() {
                     }
 
                 } else {
-                    // Más items en el carrito de los disponibles
-
-                    // Renovar el cookie
-                    new_cookie << "shopping_cart=" << items << "; Path=/;" << "Expires=" << renewed_time(20, 0);
-                    resp->header["Set-Cookie"] = new_cookie.str();
 
                     // Redirigir con error
                     resp->header["Status"] = "303 See Other";
@@ -251,10 +233,9 @@ void http::CartController::cart_clear_get() {
     Response *resp = router->get_response();
     std::ostringstream cookie;
 
-    cookie << "shopping_cart=none;" <<"; Path=/;" << "Expires=" << expired_time();
+    sessionManager.setShoppingCart("");
 
     resp->header["Status"] = "302 Found";
-    resp->header["Set-Cookie"] = cookie.str();
     resp->header["Location"] = "/cart/checkout";
 }
 
