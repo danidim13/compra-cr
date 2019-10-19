@@ -6,10 +6,10 @@
 #include "ProductAddBuilder.h"
 #include "../Form.h"
 
-view::ProductAddBuilder::ProductAddBuilder(const std::string &title) : title(title) {}
+view::ProductAddBuilder::ProductAddBuilder(const std::string &title) : PageBuilder(title) {}
 
-std::string view::ProductAddBuilder::build_body() {
-    std::ostringstream body;
+std::string view::ProductAddBuilder::build_content() {
+    std::ostringstream content;
     view::Form form("POST", "/product/add", {
         {"Título", "title", "p. ej. Olla de presión Renaware"},
         {"Detalle", "detail", "Descripción detallada"},
@@ -21,41 +21,11 @@ std::string view::ProductAddBuilder::build_body() {
         form.set_errors(errors);
     }
 
-    body << R"(
-<!-- Inicio contenido -->
-        <main>
-        <div class="container">
-)";
-    body << R"(
-            <!-- Inicio Ofertas/últimos artículos/Resultado de búsqueda -->
-            <div class="row bg-white page-title">
-                <div class="col">
-                    <div class="my-3"></div>
-                    <div class="row">
-                        <div class="col">
-                            <h1 class="my-3" style="font-family: 'Alfa Slab One', cursive;">
-)";
-    body << title << R"(
-                            </h1>
-                        </div>
-                    </div>)";
+    content << form << std::endl;
 
-    body << form << std::endl;
-
-    body << R"(
-                    <div class="my-5"></div>
-                </div>
-            </div>
-            <!-- Fin Ofertas/últimos artículos -->
-
-        </div>
-    </main>
-    <!-- Fin contenido -->
-)";
-
-    return body.str();
+    return content.str();
 }
 
 view::ProductAddBuilder::ProductAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors)
-        : title(title), errors(errors) {}
+        : PageBuilder(title), errors(errors) {}
 

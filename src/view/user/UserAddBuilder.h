@@ -16,11 +16,10 @@ class UserAddBuilder: public PageBuilder {
 public:
     UserAddBuilder(const std::string &title);
 
-    std::string build_body() override;
+    std::string build_content() override;
 
     UserAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors);
 
-    std::string title;
     std::map<std::string, std::string> errors;
 };
 

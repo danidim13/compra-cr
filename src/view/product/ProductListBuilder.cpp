@@ -6,7 +6,7 @@
 #include "ProductListBuilder.h"
 
 view::ProductListBuilder::ProductListBuilder(const std::string &title, const std::list<view::ProductCard> &cards) :
-        title(title), cards(cards) {}
+        PageBuilder(title), cards(cards) {}
 
 std::string view::ProductListBuilder::build_content() {
     std::ostringstream content;
@@ -66,4 +66,52 @@ std::string view::ProductListBuilder::build_content() {
             <!-- Fin Ofertas/últimos artículos -->
 )";
     return content.str();
+}
+
+std::string view::ProductListBuilder::build_body() {
+    std::ostringstream body;
+
+    body << R"(
+    <!-- Inicio contenido -->
+    <main>
+        <div class="container">
+
+            <!-- Inicio banner title -->
+            <div class="row" style="background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);">
+                <div class="col">
+                    <div class="py-5">
+                        <div class="my-5">
+                            <h1 class="text-white text-center" style="font-family: 'Alfa Slab One', cursive;">Compra y venta de artículos en línea</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Fin banner title -->
+
+            <!-- Inicio barra de búsqueda -->
+            <div class="row bg-white">
+                <div class="col my-4">
+                    <form action="/product/list" method="GET" role="search">
+                        <div class="form-group row">
+                            <div class="col-10">
+                                <input type="text" name="search" class="form-control" placeholder="Búsqueda de productos">
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-primary btn-block">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Fin barra de búsqueda -->
+)";
+    body << build_content();
+
+    body << R"(
+
+        </div>
+    </main>
+    <!-- Fin contenido -->
+)";
+    return body.str();
 }

@@ -66,49 +66,41 @@ std::string view::PageBuilder::build_body() {
     std::ostringstream body;
 
     body << R"(
-    <!-- Inicio contenido -->
-    <main>
+<!-- Inicio contenido -->
+        <main>
         <div class="container">
-
-            <!-- Inicio banner title -->
-            <div class="row" style="background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);">
-                <div class="col">
-                    <div class="py-5">
-                        <div class="my-5">
-                            <h1 class="text-white text-center" style="font-family: 'Alfa Slab One', cursive;">Compra y venta de artículos en línea</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Fin banner title -->
-
-            <!-- Inicio barra de búsqueda -->
-            <div class="row bg-white">
-                <div class="col my-4">
-                    <form action="/product/list" method="GET" role="search">
-                        <div class="form-group row">
-                            <div class="col-10">
-                                <input type="text" name="search" class="form-control" placeholder="Búsqueda de productos">
-                            </div>
-                            <div class="col-2">
-                                <button type="submit" class="btn btn-primary btn-block">Buscar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Fin barra de búsqueda -->
 )";
-    body << build_content();
-
     body << R"(
+            <!-- Inicio del cuerpo de la página -->
+            <div class="row bg-white page-title">
+                <div class="col">
+                    <div class="my-3"></div>
+                    <div class="row">
+                        <div class="col">
+                            <h1 class="my-3" style="font-family: 'Alfa Slab One', cursive;">
+)";
+    body << title << R"(
+                            </h1>
+                        </div>
+                    </div>)";
+    body << build_content();
+    body << R"(
+                    <div class="my-5"></div>
+                </div>
+            </div>
+            <!-- Fin del cuerpo de la página -->
 
         </div>
     </main>
     <!-- Fin contenido -->
 )";
+
     return body.str();
 }
+/*
+ *
+
+ */
 
 std::string view::PageBuilder::build_content() {
     std::ostringstream content;
@@ -192,5 +184,7 @@ std::string view::PageBuilder::build_footer() {
     <!-- Fin footer -->
 )";
 }
+
+view::PageBuilder::PageBuilder(const std::string &title) : title(title) {}
 
 

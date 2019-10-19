@@ -23,11 +23,10 @@ public:
                     const std::map<std::string, std::string> &formErrors);
 
 private:
-    std::string build_body() override;
+    std::string build_content() override;
 
 public:
 
-    std::string title;
     std::string error;
     std::string subtotal;
     std::string taxes;

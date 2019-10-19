@@ -14,8 +14,7 @@ class UserLoginBuilder: public PageBuilder {
 public:
     UserLoginBuilder(const std::string &title, const std::string &error);
 
-    std::string build_body() override;
-    std::string title;
+    std::string build_content() override;
     std::string error;
 };
 

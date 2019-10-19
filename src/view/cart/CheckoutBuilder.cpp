@@ -7,14 +7,14 @@
 #include "../Form.h"
 
 view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::string &subtotal, const std::string &taxes,
-                                       const std::string &total, const Table &cartTable, const std::string &error) : title(title),
+                                       const std::string &total, const Table &cartTable, const std::string &error) : PageBuilder(title),
                                                                                                  subtotal(subtotal),
                                                                                                  taxes(taxes),
                                                                                                  total(total),
                                                                                                  cartTable(cartTable),
                                                                                                  error(error) {}
 
-std::string view::CheckoutBuilder::build_body() {
+std::string view::CheckoutBuilder::build_content() {
     std::ostringstream body;
     view::Form form("POST", "/cart/checkout", "Comprar", {
         {"Nombre del tarjetahabiente", "card_holder", ""},
@@ -28,23 +28,6 @@ std::string view::CheckoutBuilder::build_body() {
     }
 
     body << R"(
-<!-- Inicio contenido -->
-        <main>
-        <div class="container">
-)";
-    body << R"(
-            <!-- Inicio Ofertas/últimos artículos/Resultado de búsqueda -->
-            <div class="row bg-white page-title">
-                <div class="col">
-                    <div class="my-3"></div>
-                    <div class="row">
-                        <div class="col">
-                            <h1 class="my-3" style="font-family: 'Alfa Slab One', cursive;">
-)";
-    body << title << R"(
-                            </h1>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col my-3">)";
     body << cartTable << R"(
@@ -101,13 +84,6 @@ std::string view::CheckoutBuilder::build_body() {
                         </div>
                     </div>
                     <div class="my-5"></div>
-                </div>
-            </div>
-            <!-- Fin Ofertas/últimos artículos -->
-
-        </div>
-    </main>
-    <!-- Fin contenido -->
 )";
 
     return body.str();
@@ -116,7 +92,7 @@ std::string view::CheckoutBuilder::build_body() {
 view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::string &subtotal,
                                        const std::string &taxes, const std::string &total,
                                        const view::Table &cartTable, const std::string &error,
-                                       const std::map<std::string, std::string> &formErrors) : title(title),
+                                       const std::map<std::string, std::string> &formErrors) : PageBuilder(title),
                                                                                               subtotal(subtotal),
                                                                                               taxes(taxes),
                                                                                               total(total),

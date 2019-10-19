@@ -13,11 +13,9 @@ namespace view {
 class ProductAddBuilder: public PageBuilder {
 public:
     ProductAddBuilder(const std::string &title, const std::map<std::string, std::string> &errors);
-
     ProductAddBuilder(const std::string &title);
 
-    std::string build_body() override;
-    std::string title;
+    std::string build_content() override;
     std::map<std::string, std::string> errors;
 
 };

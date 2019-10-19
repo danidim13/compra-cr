@@ -17,11 +17,11 @@ class ProductListBuilder: public PageBuilder {
 public:
     ProductListBuilder(const std::string &title, const std::list<ProductCard> &cards);
 
+    std::string build_body() override;
     std::string build_content() override;
 
 public:
 
-    std::string title;
     std::list<view::ProductCard> cards;
 };
 
