@@ -34,17 +34,13 @@ void http::CartController::cart_add_get() {
     Response *resp = router->get_response();
 
     auto it = req->m_queryMap.find("id");
-    std::string items(sessionManager.getShoppingCart());
+    std::vector<unsigned int> items(sessionManager.getShoppingCart());
 
     validate::StringValidator idValidator(validate::REGEX_NUMBER, 1, 10);
 
     if (it != req->m_queryMap.end() && idValidator.validate(it->second).first ) {
 
-        if (!items.empty()) {
-            items.append(",");
-        }
-
-        items.append(it->second);
+        items.push_back(strtol(it->second.c_str(), NULL, 10));
         sessionManager.setShoppingCart(items);
 
         return Found("/");
@@ -73,13 +69,13 @@ void http::CartController::cart_checkout_get() {
     Response *resp = router->get_response();
     std::vector<model::Product> products;
 
-    std::string items = sessionManager.getShoppingCart();
+    std::vector<unsigned int> items = sessionManager.getShoppingCart();
     std::string error(req->m_queryMap["error"]);
     validate::StringValidator errorValidator(validate::REGEX_SPANISH_SENTENCE, 0, 100);
 
     log_debug(NULL, (char*) "Procesando carrito de compras");
-    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
-    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
+//    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
+//    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
 
     if (sessionManager.getUser() > 0) {
         if (!items.empty()) {
@@ -129,7 +125,7 @@ void http::CartController::cart_checkout_post() {
 
     // Validación en sessionManager de user_id y shopping_cart
     unsigned int user_id = sessionManager.getUser();
-    std::string items(sessionManager.getShoppingCart());
+    std::vector<unsigned int> items(sessionManager.getShoppingCart());
 
     std::map<std::string, std::string> card_data = split_query((char*)req->m_Content.c_str());
     validate::MapValidator cardValidator = model::Purchase::CardValidator();
@@ -215,7 +211,7 @@ void http::CartController::cart_clear_get() {
     Response *resp = router->get_response();
     std::ostringstream cookie;
 
-    sessionManager.setShoppingCart("");
+    sessionManager.setShoppingCart({});
 
     return Found("/cart/checkout");
 }

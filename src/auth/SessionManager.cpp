@@ -15,7 +15,9 @@
 #include <cassert>
 #include <sstream>
 
-auth::SessionManager::SessionManager() : user_id(0), shopping_cart("") {}
+using json = nlohmann::json;
+
+auth::SessionManager::SessionManager() : user_id(0) {}
 
 std::string auth::SessionManager::genSID() {
 
@@ -51,9 +53,13 @@ unsigned int auth::SessionManager::getUser() const {
     return user_id;
 }
 
-void auth::SessionManager::setShoppingCart(const std::string &cart, const bool &purchased) {
-    shopping_cart = cart;
+void auth::SessionManager::setShoppingCart(const std::vector<unsigned int> &cart, const bool &purchased) {
+    session_data["shopping_cart"] = cart;
     purchase_finalized = purchased;
+}
+
+std::vector<unsigned int> auth::SessionManager::getShoppingCart() const {
+    return session_data["shopping_cart"].get<std::vector<unsigned int>>();
 }
 
 std::string auth::SessionManager::getCookie() const {
@@ -67,11 +73,13 @@ std::string auth::SessionManager::getCookie() const {
     }
      */
 
+    /*
     if (purchase_finalized) {
         cookie << "Set-Cookie: " << "shopping_cart=" << shopping_cart << "; Path=/; Expires=" << renewed_time(0, 1) << std::endl;
     } else {
         cookie << "Set-Cookie: " << "shopping_cart=" << shopping_cart << "; Path=/; Expires=" << renewed_time() << std::endl;
     }
+     */
 
     cookie << "Set-Cookie: " <<  "sid=" << sessionId << "; Path=/; Expires=" << renewed_time() << std::endl;
     log_debug(NULL, (char*)"Cookie string");
@@ -79,9 +87,6 @@ std::string auth::SessionManager::getCookie() const {
     return cookie.str();
 }
 
-std::string auth::SessionManager::getShoppingCart() const {
-    return shopping_cart;
-}
 
 
 void auth::SessionManager::initFromCookie(const std::map<std::string, std::string> &cookie) {
@@ -100,14 +105,11 @@ void auth::SessionManager::initFromCookie(const std::map<std::string, std::strin
             std::ostringstream msg;
             msg << "Error formato de SID: " << sessionId << " (" << sessionIdValidator.validate(sessionId).second << ")";
             log_error(NULL, (char*)msg.str().c_str());
-            sessionId = genSID();
-            new_session = true;
+            newSession();
         }
     } else {
         // Sesión nueva
-        log_info(NULL, "New session started");
-        sessionId = genSID();
-        new_session = true;
+        newSession();
         log_info(NULL, (char*)sessionId.c_str());
     }
 
@@ -141,8 +143,7 @@ void auth::SessionManager::fetchSessionData(std::string id) {
         last_access = sessions[0].time_last_access();
         if (difftime(now, last_access) > 60 * SESSION_KEEP_ALIVE_MIN) {
             log_debug(NULL, (char*)"Session expired");
-            sessionId = genSID();
-            new_session = true;
+            newSession();
             model::Session::clear(id);
         } else {
             setFromEntity(sessions[0]);
@@ -150,8 +151,7 @@ void auth::SessionManager::fetchSessionData(std::string id) {
     } else {
         // Posibilidad de tampering o sesión expirada automáticamente
         log_debug(NULL, (char*)"No session found, creating new");
-        sessionId = genSID();
-        new_session = true;
+        newSession();
     }
 }
 
@@ -225,4 +225,17 @@ void auth::SessionManager::pushSessionData() {
 
 
 }
+
+void auth::SessionManager::newSession() {
+    sessionId = genSID();
+    new_session = true;
+//    session_data = R"({ "shopping_cart": [], "form_error" : {} })"_json;
+    session_data["shopping_cart"] = json::array();
+    session_data["form_error"] = json::object();
+
+    std::ostringstream msg;
+    msg << "Nueva sesión iniciada para IP: '" << http::gpRemoteAddr << "', con ID: '" << sessionId << "'";
+    log_info(NULL, (char*) msg.str().c_str());
+}
+
 

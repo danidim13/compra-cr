@@ -87,9 +87,13 @@ std::vector<model::Product> model::Product::search(std::string search) {
     return products;
 }
 
-std::vector<model::Product> model::Product::getItemsFromCart(std::string cart) {
+std::vector<model::Product> model::Product::getItemsFromCart(std::vector<unsigned int> cart) {
     std::ostringstream query;
-    std::map<unsigned int, int> itemMap = split_cart_str(cart.c_str());
+    std::map<unsigned int, int> itemMap;
+    for (auto item: cart) {
+        ++itemMap[item];
+    }
+//    = split_cart_str(cart.c_str());
 //    std::vector<model::Product> entities;
 
     query << "SELECT * FROM products WHERE id IN (";

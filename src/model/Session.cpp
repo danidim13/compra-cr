@@ -85,8 +85,8 @@ std::vector<model::Session> model::Session::find(std::string id) {
 
 void model::Session::clear(std::string id) {
     std::ostringstream query;
-    query << "DELETE FROM sessions WHERE if LIKE '" << id << "'";
-    model::ConnectionHandler::execute(id);
+    query << "DELETE FROM sessions WHERE id LIKE '" << id << "'";
+    model::ConnectionHandler::execute(query.str());
 }
 
 void model::Session::update(const std::vector<std::string> &select) {

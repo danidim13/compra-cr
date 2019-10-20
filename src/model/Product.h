@@ -26,7 +26,7 @@ public:
 
     static std::vector<Product> getLatestN(unsigned int n);
     static std::vector<Product> search(std::string keyword);
-    static std::vector<Product> getItemsFromCart(std::string);
+    static std::vector<Product> getItemsFromCart(std::vector<unsigned int> cart);
 };
 }
 

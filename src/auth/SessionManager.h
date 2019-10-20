@@ -27,8 +27,8 @@ namespace auth {
         void setUser(const unsigned int id);
         unsigned  int getUser() const;
 
-        void setShoppingCart(const std::string &cart, const bool &purchased = false);
-        std::string getShoppingCart() const;
+        void setShoppingCart(const std::vector<unsigned int> &cart, const bool &purchased = false);
+        std::vector<unsigned int> getShoppingCart() const;
 
         std::string getCookie() const;
         void pushSessionData();
@@ -36,6 +36,7 @@ namespace auth {
     private:
 
         std::string genSID();
+        void newSession();
         void handle_error(const std::string &f, const int &l);
 
         void fetchSessionData(std::string id);
@@ -49,7 +50,7 @@ namespace auth {
         std::string user_agent;
 
         nlohmann::json session_data;
-        std::string shopping_cart;
+//        std::vector<int> shopping_cart;
 
         bool purchase_finalized;
         bool new_session;
