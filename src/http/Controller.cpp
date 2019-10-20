@@ -59,21 +59,7 @@ bool http::Controller::validateReq() {
 void http::Controller::setSession() {
 
     Request *req = router->get_request();
-
-    // Validación/sanitización implícita de user_id en la conversión
-    if (req->m_CookieMap.find("user_id") != req->m_CookieMap.end()) {
-        sessionManager.setUser(strtoul(req->m_CookieMap["user_id"].c_str(), NULL, 10));
-    } else {
-        sessionManager.setUser(0);
-    }
-
-    if (req->m_CookieMap.find("shopping_cart") != req->m_CookieMap.end()) {
-        std::string items(req->m_CookieMap["shopping_cart"]);
-        validate::StringValidator itemsValidator(validate::REGEX_CART_ITEMS, 1, 100);
-        if (itemsValidator.validate(items).first) {
-            sessionManager.setShoppingCart(items);
-        }
-    }
+    sessionManager.initFromCookie(req->m_CookieMap);
 
 }
 
@@ -90,6 +76,8 @@ void http::Controller::processReq(const http::Request &request) {
 }
 
 void http::Controller::refreshSession() {
+    sessionManager.pushSessionData();
+
     Response * response = router->get_response();
     response->cookies = sessionManager.getCookie();
 }

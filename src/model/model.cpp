@@ -21,6 +21,12 @@ model::EntityAttr::EntityAttr(unsigned int v) {
     attrValue.u = v;
 }
 
+model::EntityAttr::EntityAttr(long long int v) {
+    attrType = model::LONG;
+    attrValue.l = v;
+}
+
+
 model::EntityAttr::EntityAttr(std::string v) {
     attrType = model::STRING;
     attrStr = v;
@@ -38,6 +44,10 @@ bool model::Entity::set_from_row(sql::ResultSet *res)
                 }
                 case model::UINT: {
                     it->second.attrValue.u = res->getUInt(it->first);
+                    break;
+                }
+                case model::LONG: {
+                    it->second.attrValue.l = res->getInt64(it->first);
                     break;
                 }
                 case model::STRING: {
@@ -73,6 +83,10 @@ bool model::Entity::set_from_row(sql::ResultSet *res, const std::vector<std::str
                     }
                     case model::UINT: {
                         it->second.attrValue.u = res->getUInt(attrName);
+                        break;
+                    }
+                    case model::LONG: {
+                        it->second.attrValue.l = res->getInt64(attrName);
                         break;
                     }
                     case model::STRING: {
@@ -111,6 +125,10 @@ bool model::Entity::set_from_map(const std::map<std::string, std::string> &map) 
                     it->second.attrValue.u = strtoul(pair.second.c_str(), NULL, 10);
                     break;
                 }
+                case model::LONG: {
+                    it->second.attrValue.l = strtoll(pair.second.c_str(), NULL, 10);
+                    break;
+                }
                 case model::STRING: {
                     it->second.attrStr = pair.second;
                     it->second.attrValue.str = (char*)it->second.attrStr.c_str();
@@ -122,6 +140,52 @@ bool model::Entity::set_from_map(const std::map<std::string, std::string> &map) 
         }
     }
     return false;
+}
+
+bool model::Entity::insert(const std::vector<std::string> &select) {
+    assert(!table.empty());
+
+    std::ostringstream query;
+    std::ostringstream columns;
+    std::ostringstream values;
+
+    columns << "(";
+    values << "(";
+    size_t len = select.size();
+
+    for (auto col: select) {
+        --len;
+        columns << col;
+        switch (m_cols[col].attrType) {
+            case model::INT: {
+                values << m_cols[col].attrValue.i;
+                break;
+            }
+            case model::UINT: {
+                values << m_cols[col].attrValue.u;
+                break;
+            }
+            case model::LONG: {
+                values << m_cols[col].attrValue.l;
+                break;
+            }
+            case model::STRING: {
+                values << "'" << m_cols[col].attrStr << "'";
+                break;
+            }
+            default:
+                break;
+        }
+        if (len > 0) {
+            columns << ", ";
+            values << ", ";
+        }
+    }
+    columns << ")" ;
+    values << ")";
+    query << "INSERT INTO " << table << " " << columns.str() << " VALUES " << values.str();
+
+    return model::ConnectionHandler::execute(query.str());
 }
 
 bool model::Entity::insert_autoId(const std::vector<std::string> &select) {
@@ -148,6 +212,10 @@ bool model::Entity::insert_autoId(const std::vector<std::string> &select) {
             }
             case model::UINT: {
                 values << m_cols[col].attrValue.u;
+                break;
+            }
+            case model::LONG: {
+                values << m_cols[col].attrValue.l;
                 break;
             }
             case model::STRING: {
@@ -195,6 +263,10 @@ bool model::Entity::insert_autoId() {
                 values << pair.second.attrValue.u;
                 break;
             }
+            case model::LONG: {
+                values << pair.second.attrValue.l;
+                break;
+            }
             case model::STRING: {
                 values << "'" << pair.second.attrStr << "'";
                 break;
@@ -225,6 +297,10 @@ std::vector<std::string> model::Entity::vector(const std::vector<std::string> &s
             }
             case UINT: {
                 entity.push_back(std::to_string(it->second.attrValue.u));
+                break;
+            }
+            case LONG: {
+                entity.push_back(std::to_string(it->second.attrValue.l));
                 break;
             }
             case STRING: {

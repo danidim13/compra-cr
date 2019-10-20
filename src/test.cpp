@@ -23,6 +23,59 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include "nlohmann/json.hpp"
+
+void json_test() {
+    using json = nlohmann::json;
+    json j = R"(
+    {
+      "shopping_cart" : [1, 2, 1, 5],
+      "errors" : {
+        "f1" : "val1",
+        "f2" : "val2"
+      }
+    }
+)"_json;
+
+    json::iterator it = j.find("shopping_cart");
+    if (it != j.end()) {
+        assert(it.value().is_array());
+        std::vector<int> v = it.value().get<std::vector<int>>();
+        for (auto datum: v) {
+            std::cout << datum << std::endl;
+        }
+    }
+
+    /*
+    std::cout << "Valor serializado" << std::endl;
+    std::cout << j << std::endl;
+
+
+    std::cout << "Iterar sobre el array" << std::endl;
+    for (json::iterator it = j.begin(); it != j.end(); ++it) {
+        std::cout << it.key() << " : ";
+        if (it.value().size() > 1) {
+             std::cout << std::endl;
+             for (json::iterator it2 = it.value().begin(); it2 != it.value().end(); ++it2) {
+                 std::cout << it.value() << std::endl;
+             }
+        } else {
+            std::cout << it.value() << std::endl;
+        }
+    }
+     */
+}
+
+void encode_test() {
+
+    unsigned char data[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    unsigned char enco[9];
+
+    for (int i = 1; i < 8; i++) {
+        EVP_EncodeBlock(enco, data, i);
+        std::cout << std::string((char*)enco) << std::endl;
+    }
+}
 
 void passwd_test() {
     auth::PasswordHasher hasher;
@@ -231,7 +284,9 @@ void test_builder() {
 
 int main(int argc, char *argv[]) {
 
-    passwd_test();
+    json_test();
+//    encode_test();
+//    passwd_test();
 //    crypt_test();
 //    payment_test();
 //    test_cart();

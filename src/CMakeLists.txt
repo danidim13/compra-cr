@@ -2,6 +2,8 @@
 find_package(OpenSSL REQUIRED)
 
 set(core_SRCS
+        nlohmann/json.hpp
+        nlohmann/json_fwd.hpp
         util/cookie.cpp util/cookie.h
         util/decode.h util/decode.cpp
         util/log.cpp util/log.h
@@ -38,7 +40,7 @@ set(core_SRCS
         validate/MapValidator.cpp validate/MapValidator.h
         auth/PasswordHasher.cpp auth/PasswordHasher.h
         auth/SessionManager.cpp auth/SessionManager.h
-        )
+        model/Session.cpp model/Session.h)
 
 
 add_library(core ${core_SRCS})
