@@ -31,7 +31,7 @@
 void http::UserController::user_add_get() {
     Response *resp = router->get_response();
 
-    pageView.reset(new view::UserAddBuilder("Registrarse"));
+    pageView.reset(new view::UserAddBuilder("Registrarse", _form_error));
 //    std::cout << "Content-type: text/html; charset=utf-8\n\n" <<  pageBuilder.build_document() << std::endl;
 }
 
@@ -79,7 +79,8 @@ void http::UserController::user_add_post() {
         for (auto err : result.errors) {
             log_debug(NULL, (char*)err.second.c_str());
         }
-        pageView.reset(new view::UserAddBuilder("Registrarse", result.errors));
+        (*_SESSION)["form_error"] =  result.errors;
+        SeeOther("/user/add");
     }
 
 }

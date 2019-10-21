@@ -34,6 +34,9 @@ protected:
     void BadRequest();
     void MethodNotAllowed();
 
+    nlohmann::json *_SESSION;
+    std::map<std::string, std::string> _form_error;
+
 private:
     bool validateReq();
     void setSession();
@@ -42,6 +45,7 @@ private:
     void processPostReq(const Request &request);
     void refreshSession();
     void makeResponse();
+
 
 };
 

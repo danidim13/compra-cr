@@ -29,6 +29,7 @@ protected:
     std::string title;
     std::string username;
     bool logged;
+    int items;
 };
 
 }

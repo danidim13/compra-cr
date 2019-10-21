@@ -33,6 +33,8 @@ namespace auth {
         std::string getCookie() const;
         void pushSessionData();
 
+        nlohmann::json session_data;
+
     private:
 
         std::string genSID();
@@ -49,7 +51,6 @@ namespace auth {
         std::string remote_ip;
         std::string user_agent;
 
-        nlohmann::json session_data;
 //        std::vector<int> shopping_cart;
 
         bool purchase_finalized;

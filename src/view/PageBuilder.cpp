@@ -5,6 +5,7 @@
 #include <sstream>
 #include "PageBuilder.h"
 #include "ProductCard.h"
+#include "NavItem.h"
 
 std::string view::PageBuilder::build_document() {
     std::ostringstream document_builder;
@@ -52,15 +53,29 @@ std::string view::PageBuilder::build_header() {
 )";
     header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/">Inicio</a>)" << std::endl;
     if (logged) {
-        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/product/add">Vender</a>)" << std::endl;
-        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/cart/checkout">Carrito de compras</a>)" << std::endl;
-        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/logout">Logout</a>)" << std::endl;
+        header << std::string(5*4, ' ') << view::NavItem("/product/add", "Vender") << std::endl;
+        header << std::string(5*4, ' ') << view::NavItem("/cart/checkout", "Carrito de compras") << std::endl;
+        header << std::string(5*4, ' ') << view::NavItem("/user/logout", "Logout") << std::endl;
     } else {
-        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/add">Registrarse</a>)" << std::endl;
-        header << std::string(5*4, ' ') << R"(<a class="nav-item nav-link" href="/user/login">Login</a>)" << std::endl;
+        header << std::string(5*4, ' ') << view::NavItem("/user/add", "Registrarse") << std::endl;
+        header << std::string(5*4, ' ') << view::NavItem("/user/login", "Login") << std::endl;
     }
     header << R"(
                 </div>
+)";
+    if (logged) {
+        header << R"(
+            <div class="col-lg-2 text-white text-right">
+                <div>Usuario(a):</div>
+                <div>Artículos en carrito:</div>
+            </div>
+            <div class="col-lg-2 text-white">
+                <div><strong>)" << username << R"(</strong></div>
+                <div><strong>)" << items << R"(</strong></div>
+            </div>
+)";
+    }
+    header << R"(
             </div>
         </nav>
         <!-- Fin navegación -->
@@ -197,6 +212,7 @@ view::PageBuilder::PageBuilder(const std::string &title) : title(title), logged(
 void view::PageBuilder::setUserInfo(const std::string &name, const int &cartItems) {
     logged = true;
     username = name;
+    items = cartItems;
 
 }
 

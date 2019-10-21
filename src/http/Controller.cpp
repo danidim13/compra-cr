@@ -61,6 +61,15 @@ void http::Controller::setSession() {
     Request *req = router->get_request();
     sessionManager.initFromCookie(req->m_CookieMap);
 
+    _SESSION = &sessionManager.session_data;
+
+    // Consumir error de formulario si existe
+    if (_SESSION->find("form_error") != _SESSION->end() && (*_SESSION)["form_error"].is_object()) {
+        _form_error = (*_SESSION)["form_error"].get<std::map<std::string, std::string>>();
+        if (!_form_error.empty()) {
+            (*_SESSION)["form_error"] = nlohmann::json::object();
+        }
+    }
 }
 
 void http::Controller::processReq(const http::Request &request) {
@@ -163,7 +172,7 @@ void http::Controller::makeResponse() {
     if (pageView) {
 
         if (sessionManager.getUser() > 0) {
-            pageView->setUserInfo("bla", 0);
+            pageView->setUserInfo("bla", (*_SESSION)["shopping_cart"].size());
         }
 
         Response *resp = router->get_response();

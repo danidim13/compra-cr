@@ -31,22 +31,23 @@
  */
 void http::CartController::cart_add_get() {
     Request *req = router->get_request();
-    Response *resp = router->get_response();
 
     auto it = req->m_queryMap.find("id");
     std::vector<unsigned int> items(sessionManager.getShoppingCart());
 
     validate::StringValidator idValidator(validate::REGEX_NUMBER, 1, 10);
 
-    if (it != req->m_queryMap.end() && idValidator.validate(it->second).first ) {
-
-        items.push_back(strtol(it->second.c_str(), NULL, 10));
-        sessionManager.setShoppingCart(items);
-
-        return Found("/");
+    if (sessionManager.getUser() > 0) {
+        if (it != req->m_queryMap.end() && idValidator.validate(it->second).first ) {
+            items.push_back(strtol(it->second.c_str(), NULL, 10));
+            sessionManager.setShoppingCart(items);
+            return Found("/");
+        } else {
+            // Error
+            return BadRequest("/");
+        }
     } else {
-        // Error
-        return BadRequest("/");
+        SeeOther("/user/login?error=Para+realizar+una+compra+debe+ingresar+al+sistema");
     }
 }
 
@@ -66,7 +67,6 @@ void http::CartController::cart_add_get() {
 void http::CartController::cart_checkout_get() {
 
     Request *req = router->get_request();
-    Response *resp = router->get_response();
     std::vector<model::Product> products;
 
     std::vector<unsigned int> items = sessionManager.getShoppingCart();
@@ -74,8 +74,6 @@ void http::CartController::cart_checkout_get() {
     validate::StringValidator errorValidator(validate::REGEX_SPANISH_SENTENCE, 0, 100);
 
     log_debug(NULL, (char*) "Procesando carrito de compras");
-//    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
-//    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
 
     if (sessionManager.getUser() > 0) {
         if (!items.empty()) {
@@ -87,12 +85,11 @@ void http::CartController::cart_checkout_get() {
             if (!errorValidator.validate(error).first) {
                 error = "Error: por favor intente de nuevo";
             }
-
-            return pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error));
+            return pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, _form_error));
         } else {
             view::Table table({"Producto", "Cantidad", "Disponible", "Precio p/unidad"});
             table.content.push_back({"Aún no tiene nada en su carrito", "", "", ""});
-            return pageView.reset(new view::CheckoutBuilder("Su orden", "0", "0", "0", table, error));
+            return pageView.reset(new view::CheckoutBuilder("Su orden", "0", "0", "0", table, error, _form_error));
         }
     } else {
         return SeeOther("/user/login?error=Debe+loggearse+para+hacer+una+compra");
@@ -127,15 +124,12 @@ void http::CartController::cart_checkout_post() {
     unsigned int user_id = sessionManager.getUser();
     std::vector<unsigned int> items(sessionManager.getShoppingCart());
 
+    // Validar datos de tarjeta
     std::map<std::string, std::string> card_data = split_query((char*)req->m_Content.c_str());
     validate::MapValidator cardValidator = model::Purchase::CardValidator();
-
     auto cardValRes = cardValidator.validate(card_data);
 
     log_debug(NULL, (char*) "Procesando venta");
-    log_debug(NULL, (char*) (std::string("user_id=").append(req->m_CookieMap["user_id"]).c_str()));
-    log_debug(NULL, (char*) (std::string("shopping_cart=").append(req->m_CookieMap["shopping_cart"]).c_str()));
-
     log_debug(NULL, (char*) "Información de tarjeta:");
     for (auto datum: card_data) {
         log_debug(NULL, (char*) std::string("").append(datum.first).append(": ").append(datum.second).c_str());
@@ -163,15 +157,11 @@ void http::CartController::cart_checkout_post() {
                     auto transaction_res = model::Purchase::processPurchase(products, user_id, card_data);
 
                     if (transaction_res.first) {
-
                         // Expirar el cookie poco después
                         sessionManager.setShoppingCart(items, true);
-
                         return Found("/cart/checkout");
                     } else {
-                        // Fail
-
-                        // Redirigir con error
+                        // Fail redirigir con error
                         return SeeOther(std::string("/cart/checkout?error=").append(transaction_res.second));
                     }
 
@@ -179,17 +169,14 @@ void http::CartController::cart_checkout_post() {
                     // Redirigir con error
                     return SeeOther( "/cart/checkout?error=Solicit%C3%B3+mas+productos+de+los+que+hay+disponibles");
                 }
-
             } else {
 
-                // TODO: implementar con redirect
                 log_info(NULL, "Datos de tarjeta inválidos");
 
                 // Error en formulario de tarjeta
-                SaleData sale = getSaleData(products);
+                (*_SESSION)["form_error"] = cardValRes.errors;
                 std::string error("Error en formulario, revise sus datos");
-
-                pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, cardValRes.errors));
+                SeeOther(std::string("/cart/checkout?error=").append(error));
             }
         } else {
             // Carrito vacío
@@ -210,9 +197,7 @@ void http::CartController::cart_clear_get() {
 
     Response *resp = router->get_response();
     std::ostringstream cookie;
-
     sessionManager.setShoppingCart({});
-
     return Found("/cart/checkout");
 }
 

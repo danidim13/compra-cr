@@ -15,6 +15,8 @@ public:
     NavItem(const std::string &href, const std::string &content,
             const std::unordered_map<std::string, std::string> &mAttributes);
 
+    NavItem(const std::string &href, const std::string &content);
+
 public:
 
 };

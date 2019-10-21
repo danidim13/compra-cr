@@ -76,7 +76,7 @@ void http::ProductController::product_add_get() {
 
     unsigned int user_id = sessionManager.getUser();
     if (user_id > 0 ) {
-        pageView.reset(new view::ProductAddBuilder("Agregar producto al catálogo"));
+        pageView.reset(new view::ProductAddBuilder("Agregar producto al catálogo", _form_error));
     } else {
         return SeeOther("/user/login?error=Debe+loggearse+para+agregar+productos");
     }
@@ -129,13 +129,13 @@ void http::ProductController::product_add_post() {
 
                 return Found("/");
             } else {
-                // FIXME:
-                resp->header["Content-type"] = "text/html; charset=utf-8";
-                resp->content = "Error";
+                // FIXME: error de bd (dar info?)
+                return BadRequest("/product/add");
             }
         } else {
             // Error de validación
-            pageView.reset(new view::ProductAddBuilder("Agregar producto al catálogo", result.errors));
+            (*_SESSION)["form_error"] = result.errors;
+            return SeeOther("/product/add");
         }
     } else {
         // No hay usuario loggeado
