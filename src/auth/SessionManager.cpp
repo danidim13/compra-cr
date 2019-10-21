@@ -42,10 +42,14 @@ std::string auth::SessionManager::genSID() {
     return std::string((char*)sid);
 }
 
-void auth::SessionManager::setUser(const unsigned int id) {
+void auth::SessionManager::setUser(const unsigned int &id, const std::string &username) {
     user_id = id;
     if (user_id == 0) {
         model::Session::logout(sessionId);
+        session_data.erase(session_data.find("username"));
+    }
+    if (!username.empty()) {
+        session_data["username"] = username;
     }
 }
 

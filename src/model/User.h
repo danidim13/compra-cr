@@ -24,6 +24,7 @@ public:
 
     static std::pair<bool, std::string> login(const std::string &username, const std::string &password);
     static validate::MapValidator LoginValidator();
+    static std::vector<User> find(const unsigned int &id, const std::vector<std::string> &select);
 };
 }
 

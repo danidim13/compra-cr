@@ -24,7 +24,7 @@ namespace auth {
 
         void initFromCookie(const std::map<std::string, std::string> &cookie);
 
-        void setUser(const unsigned int id);
+        void setUser(const unsigned int &id, const std::string &username = "");
         unsigned  int getUser() const;
 
         void setShoppingCart(const std::vector<unsigned int> &cart, const bool &purchased = false);

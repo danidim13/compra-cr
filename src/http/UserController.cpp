@@ -132,7 +132,7 @@ void http::UserController::user_login_post() {
             // Login exitoso
 
 
-            sessionManager.setUser(strtoul(res.second.c_str(), NULL, 10));
+            sessionManager.setUser(strtoul(res.second.c_str(), NULL, 10), data["username"]);
             return Found("/?login=success");
 
         } else {

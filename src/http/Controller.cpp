@@ -172,7 +172,7 @@ void http::Controller::makeResponse() {
     if (pageView) {
 
         if (sessionManager.getUser() > 0) {
-            pageView->setUserInfo("bla", (*_SESSION)["shopping_cart"].size());
+            pageView->setUserInfo((*_SESSION)["username"], (*_SESSION)["shopping_cart"].size());
         }
 
         Response *resp = router->get_response();
@@ -197,7 +197,7 @@ void http::Controller::SeeOther(std::string location) {
 void http::Controller::BadRequest(std::string location){
     Response *resp = router->get_response();
     resp->header["Status"] = "400 Bad Request";
-    resp->header["Location"] = "/";
+    resp->header["Location"] = location;
 }
 
 void http::Controller::BadRequest(){

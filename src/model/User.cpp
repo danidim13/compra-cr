@@ -110,3 +110,17 @@ validate::MapValidator model::User::LoginValidator() {
     });
 }
 
+std::vector<model::User> model::User::find(const unsigned int &id, const std::vector<std::string> &select) {
+    std::ostringstream query;
+    query << "SELECT ";
+    for (int i = 0; i < select.size(); ++i) {
+        query << select[i];
+        if (i != select.size()-1) {
+            query << ", ";
+        }
+    }
+    query << " FROM users WHERE id=" << id <<" LIMIT 1";
+
+    return model::ConnectionHandler::executeQuery<User>(query.str(), select);
+}
+
