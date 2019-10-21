@@ -5,7 +5,7 @@ echo "Instalando paquetes y dependencias de la aplicación"
 yum update -y
 yum install mariadb-server httpd -y
 yum group install "Development Tools" -y
-yum install cmake3 git boost-devel.x86_64 libstdc++-static.x86_64 -y
+yum install cmake3 git openssl-devel boost-devel.x86_64 libstdc++-static.x86_64 -y
 
 # Extras para mayor facilidad
 # yum install bash-completion.noarch bash-completion-extras.noarch vim
@@ -25,6 +25,7 @@ git clone https://github.com/danidim13/compra-cr.git
 
 echo "Compilando aplicación cgi"
 cd compra-cr
+mkdir build && cd build
 cmake3 .
 make app_ecommerce.cgi && make install
 
@@ -46,6 +47,7 @@ sudo chmod g+w /var/www/compra.cr/logs
 echo "Configurando SELinux"
 semanage fcontext -a -t httpd_sys_ra_content_t "/var/www/compra.cr/logs(/.*)?"
 semanage fcontext -a -t httpd_log_t "/var/www/compra.cr/apache_logs(/.*)?"
+semanage fcontext -a -t httpd_sys_content_t "/var/www/compra.cr/webroot(/.*)?"
 semanage fcontext -a -t httpd_sys_script_exec_t "/var/www/compra.cr/app_ecommerce.cgi"
 restorecon -R -v /var/www/compra.cr/
 setsebool -P httpd_can_network_connect_db on
