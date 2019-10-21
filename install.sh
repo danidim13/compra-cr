@@ -46,7 +46,7 @@ function compile {
 function apache_conf {
     # Creación del virtual host
     mkdir /etc/httpd/sites-available /etc/httpd/sites-enabled &&
-    cp compra.cr.conf /etc/httpd/sites-available/ &&
+    cp etc/compra.cr.conf /etc/httpd/sites-available/ &&
 
     echo "# Include the virtual host configurations:" >> /etc/httpd/conf/httpd.conf &&
     echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf &&
@@ -76,6 +76,7 @@ function selinux_conf {
 function mysql_conf {
     ## Configuracion de MariaDB
     echo "Configurando MariaDB" &&
+    cp etc/my.cnf /etc/my.cnf &&
     systemctl enable mariadb &&
     systemctl start mariadb &&
 
