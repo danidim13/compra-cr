@@ -3,7 +3,7 @@
 
 echo "Instalando paquetes y dependencias de la aplicación"
 yum update -y
-yum install mariadb-server httpd -y
+yum install mariadb-server httpd gtest -y
 yum group install "Development Tools" -y
 yum install cmake3 git openssl-devel boost-devel.x86_64 libstdc++-static.x86_64 -y
 
@@ -26,8 +26,9 @@ git clone https://github.com/danidim13/compra-cr.git
 echo "Compilando aplicación cgi"
 cd compra-cr
 mkdir build && cd build
-cmake3 .
+cmake3 ..
 make app_ecommerce.cgi && make install
+cd ..
 
 ## Configuración de Apache
 
