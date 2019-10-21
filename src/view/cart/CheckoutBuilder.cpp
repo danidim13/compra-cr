@@ -20,7 +20,7 @@ std::string view::CheckoutBuilder::build_content() {
         {"Nombre del tarjetahabiente", "card_holder", ""},
         {"Númbero de tarjeta", "card_number", "xxxx-xxxx-xxxx-xxxx"},
         {"Código de seguridad", "ccv", "xxx"},
-        {"Fecha de vencimiento", "expiration_date", ""}
+        {"Fecha de vencimiento", "expiration_date", "MM/YY"}
     });
 
     if (!formErrors.empty()) {
@@ -43,16 +43,27 @@ std::string view::CheckoutBuilder::build_content() {
                     </div>)";
     }
 
+    if (success.empty()) {
+        body << R"(
+                        <div class="row my-3">
+                            <div class="col-lg-3 col-sm-4">
+                                <a class="btn btn-secondary btn-block" href="/cart/clear"/>Vaciar</a>
+                            </div>
+                        </div>)";
+    }
+
     body << R"(
-                    <div class="row my-3">
-                        <div class="col-lg-3 col-sm-4">
-                            <a class="btn btn-secondary btn-block" href="/cart/clear"/>Vaciar</a>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-lg-6 py-3">
     )";
-    body << form << std::endl;
+    if (success.empty()) {
+        body << form << std::endl;
+    } else {
+        body << R"(
+                            <h2 class="text-success">)" << success << R"(</h2>
+)";
+    }
+
 
     body << R"(
                         </div>
@@ -99,3 +110,15 @@ view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::stri
                                                                                               cartTable(cartTable),
                                                                                               error(error),
                                                                                               formErrors(formErrors) {}
+
+view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::string &subtotal,
+                                       const std::string &taxes, const std::string &total,
+                                       const view::Table &cartTable, const std::string &error,
+                                       const std::map<std::string, std::string> &formErrors,
+                                       const std::string &success) : PageBuilder(title), subtotal(subtotal),
+                                                                                               taxes(taxes),
+                                                                                               total(total),
+                                                                                               cartTable(cartTable),
+                                                                                               error(error),
+                                                                                               formErrors(formErrors),
+                                                                                               success(success) {}

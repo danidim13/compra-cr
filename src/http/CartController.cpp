@@ -85,7 +85,15 @@ void http::CartController::cart_checkout_get() {
             if (!errorValidator.validate(error).first) {
                 error = "Error: por favor intente de nuevo";
             }
-            return pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, _form_error));
+
+            std::string success;
+            if (_SESSION->find("purchase_success") != _SESSION->end() && (*_SESSION)["purchase_success"]) {
+                success = "Su compra fue tramitada con éxito";
+                _SESSION->erase(_SESSION->find("purchase_success"));
+                sessionManager.setShoppingCart({});
+            }
+
+            return pageView.reset(new view::CheckoutBuilder("Su orden", sale.subtotal, sale.taxes, sale.total, sale.table, error, _form_error, success));
         } else {
             view::Table table({"Producto", "Cantidad", "Disponible", "Precio p/unidad"});
             table.content.push_back({"Aún no tiene nada en su carrito", "", "", ""});
@@ -159,6 +167,7 @@ void http::CartController::cart_checkout_post() {
                     if (transaction_res.first) {
                         // Expirar el cookie poco después
                         sessionManager.setShoppingCart(items, true);
+                        (*_SESSION)["purchase_success"] = true;
                         return Found("/cart/checkout");
                     } else {
                         // Fail redirigir con error
