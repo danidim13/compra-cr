@@ -12,8 +12,8 @@ view::UserLoginBuilder::UserLoginBuilder(const std::string &title, const std::st
 std::string view::UserLoginBuilder::build_content() {
     std::ostringstream body;
     body << view::Form("POST", "/user/login", {
-            {"Nombre de usuario", "username", "ejemplo"},
-            {"Contraseña", "password", "********"}
+            {"Nombre de usuario", "username", "ejemplo", FormInput::TEXT},
+            {"Contraseña", "password", FormInput::PASSWORD}
     }) << std::endl;
 
     if (!error.empty()) {

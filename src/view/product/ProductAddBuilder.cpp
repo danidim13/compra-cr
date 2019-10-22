@@ -11,10 +11,10 @@ view::ProductAddBuilder::ProductAddBuilder(const std::string &title) : PageBuild
 std::string view::ProductAddBuilder::build_content() {
     std::ostringstream content;
     view::Form form("POST", "/product/add", {
-        {"Título", "title", "p. ej. Olla de presión Renaware"},
-        {"Detalle", "detail", "Descripción detallada"},
-        {"Precio", "unit_price", "Precio en colones"},
-        {"Cantidad", "stock", "Cantidad de artículos que posee"}
+        {"Título", "title", "p. ej. Olla de presión Renaware", FormInput::TEXT},
+        {"Detalle", "detail", "Descripción detallada", FormInput::TEXTAREA},
+        {"Precio", "unit_price", "Precio en colones", FormInput::TEXT},
+        {"Cantidad", "stock", "Cantidad de artículos que posee", FormInput::TEXT}
     });
 
     if (!errors.empty()) {

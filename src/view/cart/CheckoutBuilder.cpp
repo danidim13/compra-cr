@@ -17,10 +17,11 @@ view::CheckoutBuilder::CheckoutBuilder(const std::string &title, const std::stri
 std::string view::CheckoutBuilder::build_content() {
     std::ostringstream body;
     view::Form form("POST", "/cart/checkout", "Comprar", {
-        {"Nombre del tarjetahabiente", "card_holder", ""},
-        {"Númbero de tarjeta", "card_number", "xxxx-xxxx-xxxx-xxxx"},
-        {"Código de seguridad", "ccv", "xxx"},
-        {"Fecha de vencimiento", "expiration_date", "MM/YY"}
+        {"Nombre del tarjetahabiente", "card_holder", "", FormInput::TEXT},
+        {"Númbero de tarjeta", "card_number", "Formato: xxxx-xxxx-xxxx-xxxx", FormInput::TEXT},
+        {"Código de seguridad", "ccv", "Número de 3 a 5 dígitos, se encuentra al "
+                                       "reverso de su tarjeta", FormInput::PASSWORD},
+        {"Fecha de vencimiento", "expiration_date", "Formato: MM/YY", FormInput::TEXT}
     });
 
     if (!formErrors.empty()) {

@@ -2,14 +2,32 @@
 
 Aplicación de compra y venta de bienes
 
-## Instalación y Configuración 
+# Instalación y Configuración 
 
-### Servidor de producción CentOS
+## Servidor de producción CentOS
 
 Se incluye el script de instalación `install.sh` para el servidor de producción.
 El mismo incluye toda la instalación de paquetes, configuración de SELinux, Apache y MariaDB.
 
-### Instalación manual en Ubuntu
+### Infraestructura de llave publica
+
+Los archivos de configuración para la generación de certificados se encuentran en la carpeta etc. En el
+servidor es necesario crear un CSR para una CA intermediara, este es firmado por el CA raíz que se encuentra
+en un lugar seguro externo. Luego se genera un certificado para el servidor que se firma con la CA intermediaria.
+
+Apache espera que existan los siguientes archivos:
+
+```bash
+/opt/ecommerce/ca/server/compra.cr.crt
+/opt/ecommerce/ca/server/private/compra.cr.key
+/opt/ecommerce/ca/server/chain.pem
+```
+
+Estos corresponden al certificado del servidor, la llave privada del servidor y 
+la cadena de certificados (CA intermediaria + servidor) respectivamente.
+
+
+## Instalación manual en Ubuntu
 
 Instalar herramientas de compilación
 
@@ -76,16 +94,16 @@ data.sql
 ```
 
 
-## Features
+# Features
 
-### 1. Usuario visitante
+## 1. Usuario visitante
 
 1. Página de registro: debe solicitar al menos el nombre completo, usuario, email, teléfono, así
   como otros datos que considere pertinentes.
 2. Consultar productos para la venta en el sitio, incluya alguna funcionalidad básica de búsqueda.
 3. Formulario de consultas, retroalimentación, reclamos.
 
-### 2. Usuario registrado
+## 2. Usuario registrado
 
 1. Ingresar al sistema proporcionando alguna identificación.
 2. Agregar información de un artículo para ponerlo en venta.
@@ -93,7 +111,7 @@ data.sql
 4. Concretar/finalizar el proceso de compra/entrega.
 5. Salir del sistema (logout)
 
-### Mapeo a rutas y acciones
+## Mapeo a rutas y acciones
 
 Funcionalidad             | Rutas                                    | Done
 --------------------------|------------------------------------------|--------
