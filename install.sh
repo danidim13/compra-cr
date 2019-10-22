@@ -10,6 +10,7 @@ cd ${BUILD_DIR}
 
 #----------------Preconfiguración e instalación de paquetes -------------------#
 function packages {
+    cd ${BUILD_DIR} &&
     
     echo "Instalando paquetes y dependencias de la aplicación" &&
     yum update -y &&
@@ -18,7 +19,12 @@ function packages {
     yum install cmake3 git openssl-devel boost-devel.x86_64 libstdc++-static.x86_64 -y &&
 
     # Extras para mayor facilidad
-    # yum install bash-completion.noarch bash-completion-extras.noarch vim
+    yum install bash-completion.noarch bash-completion-extras.noarch vim &&
+
+    # Version mas reciente de gcc y g++
+    sudo yum install devtoolset-4-gcc devtoolset-4-gcc-c++ &&
+    sudo update-alternatives --install /usr/bin/g++-5.3 g++-5.3 /opt/rh/devtoolset-4/root/usr/bin/g++ 10 &&
+    sudo update-alternatives --install /usr/bin/gcc-5.3 gcc-5.3 /opt/rh/devtoolset-4/root/usr/bin/gcc 10 &&
 
     # Obtener mysql c++ connector
     wget https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.12-linux-el7-x86-64bit.rpm &&
@@ -28,6 +34,7 @@ function packages {
 
 #----------------------Compilación-----------------------#
 function compile {
+    cd ${BUILD_DIR}
     # Compilar e instalar código de la aplicación
     echo "Clonando repositorio" &&
     git clone https://github.com/danidim13/compra-cr.git &&
@@ -35,7 +42,9 @@ function compile {
     echo "Compilando aplicación cgi" &&
     cd compra-cr &&
     mkdir build && cd build &&
-    cmake3 .. &&
+    cmake3 -D CMAKE_C_COMPILER=/usr/bin/gcc-5.3 -D CMAKE_CXX_COMPILER=/usr/bin/g++-5.3 .. &&
+	
+	
     make app_ecommerce.cgi && make install &&
     cd .. &&
     return 0 || return 1
@@ -44,6 +53,7 @@ function compile {
 ## Configuración de Apache
 
 function apache_conf {
+    cd ${BUILD_DIR} && cd compra-cr &&
     # Creación del virtual host
     mkdir /etc/httpd/sites-available /etc/httpd/sites-enabled &&
     cp etc/compra.cr.conf /etc/httpd/sites-available/ &&
@@ -75,6 +85,8 @@ function selinux_conf {
 
 function mysql_conf {
     ## Configuracion de MariaDB
+    cd ${BUILD_DIR} && cd compra-cr &&
+    systemctl stop mariadb &&
     echo "Configurando MariaDB" &&
     cp etc/my.cnf /etc/my.cnf &&
     systemctl enable mariadb &&
@@ -84,6 +96,7 @@ function mysql_conf {
     mysql -u root -h "localhost" < bd/schema_and_user.sql &&
     mysql -u root -h "localhost" < bd/table_definition.sql &&
     mysql -u root -h "localhost" < bd/purchase_sp.sql &&
+    mysql -u root -h "localhost" < bd/data.sql &&
     return 0 || return 1
 }
 
@@ -98,7 +111,7 @@ function firewall_conf {
 function error_exit {
     RED='\033[0;31m'
     NC='\033[0m'
-    echo "${RED}ERROR en paso $1 del proceso ${NC}"
+    echo -e "${RED}ERROR en paso $1 del proceso ${NC}"
     exit 1
 }
 

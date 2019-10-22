@@ -10,7 +10,7 @@ create table users
     username varchar(50) not null unique,
     surname varchar(50) not null,
     last_name varchar(50) null,
-    email varchar(256) not null unique,
+    email varchar(256) character set ascii not null unique,
     phone varchar(50) null,
     password char(77) not null
     );
