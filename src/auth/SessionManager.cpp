@@ -85,7 +85,7 @@ std::string auth::SessionManager::getCookie() const {
     }
      */
 
-    cookie << "Set-Cookie: " <<  "sid=" << sessionId << "; Path=/; Expires=" << renewed_time() << std::endl;
+    cookie << "Set-Cookie: " <<  "sid=" << sessionId << "; Path=/; Secure; HttpOnly; SameSite=Strict; Domain=compra.cr; Expires=" << renewed_time() << std::endl;
     log_debug(NULL, (char*)"Cookie string");
     log_debug(NULL, (char*)cookie.str().c_str());
     return cookie.str();
