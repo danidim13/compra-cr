@@ -7,6 +7,9 @@ create schema if not exists ecommerce
 create user 'ecommerce_app'@'localhost'
     identified by 'seguridad2019';
     
-grant all on ecommerce.*
+grant select, insert, create temporary tables, update, delete on ecommerce.*
     to 'ecommerce_app'@'localhost';
-    
+
+grant execute on procedure ecommerce.spPreprocessPurchase
+    to 'ecommerce_app'@'localhost';
+
