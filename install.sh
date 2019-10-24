@@ -14,7 +14,7 @@ function packages {
     
     echo "Instalando paquetes y dependencias de la aplicación" &&
     yum update -y &&
-    yum install mariadb-server httpd gtest -y &&
+    yum install mariadb-server httpd mod_ssl gtest -y &&
     yum group install "Development Tools" -y &&
     yum install cmake3 git openssl-devel boost-devel.x86_64 libstdc++-static.x86_64 -y &&
 
@@ -104,6 +104,7 @@ function firewall_conf {
     ## Firewall
     echo "Configurando firewall" &&
     sudo iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 80 -j ACCEPT -m comment --comment "Apache: allow incoming http connections on port 80" &&
+    sudo iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 443 -j ACCEPT -m comment --comment "Apache:allow incoming https connections on port 443" &&
     service iptables save &&
     return 0 || return 1
 }
